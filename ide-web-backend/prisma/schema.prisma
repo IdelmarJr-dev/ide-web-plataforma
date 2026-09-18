@@ -1,0 +1,295 @@
+// Schema do banco da aplicação (schema app_ide da Especificação Técnica — IDE Web).
+// Os schemas sandbox_* (dados de exemplo que o aluno consulta) não são modelados
+// aqui — vivem fora do Prisma, isolados por transação (ver Fase 2 · SQL sandbox).
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Papel {
+  aluno
+  professor
+  pesquisador
+}
+
+enum NivelDificuldade {
+  iniciante
+  intermediario
+}
+
+enum ResultadoStatus {
+  sucesso
+  erro_sintaxe
+  erro_execucao
+}
+
+enum ContextoDica {
+  mer
+  sql
+}
+
+// Turno da turma — conjunto fechado, pra o filtro do painel ser confiável (Fase 10, D14).
+enum Turno {
+  manha
+  tarde
+  noite
+}
+
+// Nível da modelagem do exercício — ver docs/decisions/fase7-modelagem-conceitual-logica.md.
+enum ModoMer {
+  conceitual
+  logico
+  conceitual_logico
+}
+
+model Usuario {
+  id         String   @id @default(uuid()) @db.Uuid
+  nome       String
+  // Nullable no schema por herança da sessão leve (removida na Fase 8); o DTO exige
+  // e-mail/senha para todos os papéis — ver docs/decisions/fase8-conta-do-aluno-matricula-estudo-livre.md.
+  email      String?  @unique
+  senha_hash String?
+  papel      Papel
+  matricula  String?
+  criado_em  DateTime @default(now())
+
+  sessoes                 SessaoAuth[]
+  matriculas_turma        MatriculaTurma[]
+  turmas_lecionadas       Turma[]                @relation("TurmaProfessor")
+  diagramas_mer           DiagramaMer[]
+  submissoes_sql          SubmissaoSql[]
+  respostas_dissertativas RespostaDissertativa[]
+  resultados_exercicio    ResultadoExercicio[]
+  dicas_ia                DicaIa[]
+
+  @@map("usuarios")
+}
+
+model Turma {
+  id           String    @id @default(uuid()) @db.Uuid
+  nome         String
+  disciplina   String    @default("Banco de Dados")
+  semestre     String
+  // Turno e sala são só pra filtrar o painel do professor; opcionais porque turma
+  // antiga não tem e nada depende deles (Fase 10, D14).
+  turno        Turno?
+  sala         String?
+  professor_id String    @db.Uuid
+  codigo       String    @unique
+  // Turma encerrada congela: o aluno ainda lê tudo, mas não entrega mais nada e o
+  // código para de matricular.
+  encerrada_em DateTime?
+  criado_em    DateTime  @default(now())
+
+  professor  Usuario          @relation("TurmaProfessor", fields: [professor_id], references: [id])
+  matriculas MatriculaTurma[]
+  exercicios Exercicio[]
+  provas     Prova[]
+
+  @@map("turmas")
+}
+
+// Vínculo aluno × turma. O aluno pode estar em várias turmas ao mesmo tempo, e a
+// variante de prova sorteada mora aqui (e não em Usuario) porque o sorteio é por
+// turma — ver docs/decisions/fase8-conta-do-aluno-matricula-estudo-livre.md.
+model MatriculaTurma {
+  id        String   @id @default(uuid()) @db.Uuid
+  aluno_id  String   @db.Uuid
+  turma_id  String   @db.Uuid
+  prova_id  String?  @db.Uuid
+  criado_em DateTime @default(now())
+
+  aluno Usuario @relation(fields: [aluno_id], references: [id], onDelete: Cascade)
+  turma Turma   @relation(fields: [turma_id], references: [id], onDelete: Cascade)
+  prova Prova?  @relation(fields: [prova_id], references: [id])
+
+  @@unique([aluno_id, turma_id])
+  @@map("matriculas_turma")
+}
+
+// Sorteador de provas: um agrupamento de exercícios (uma "variante" da prova). O
+// professor cria várias provas pra mesma turma e sorteia qual aluno recebe qual —
+// ver docs/decisions/fase5-sorteador-provas.md.
+model Prova {
+  id        String   @id @default(uuid()) @db.Uuid
+  turma_id  String   @db.Uuid
+  titulo    String
+  criado_em DateTime @default(now())
+
+  turma      Turma            @relation(fields: [turma_id], references: [id])
+  exercicios Exercicio[]
+  matriculas MatriculaTurma[]
+
+  @@map("provas")
+}
+
+model Exercicio {
+  id                    String           @id @default(uuid()) @db.Uuid
+  turma_id              String           @db.Uuid
+  // Opcional: exercício "solto" (prova_id null) aparece pra turma inteira; exercício
+  // vinculado a uma Prova só aparece pro aluno sorteado com aquela prova.
+  prova_id              String?          @db.Uuid
+  titulo                String
+  enunciado             String
+  nivel_dificuldade     NivelDificuldade
+  mer_gabarito          Json?
+  modo_mer              ModoMer          @default(conceitual_logico)
+  // Exercício público: qualquer aluno logado resolve, sem matrícula na turma de
+  // origem. Correção é só automática (ninguém revisa à mão).
+  publico               Boolean          @default(false)
+  sql_gabarito          String?
+  sql_setup             String?
+  gabarito_dissertativo String?
+  gabarito_liberado     Boolean          @default(false)
+  gabarito_liberado_em  DateTime?
+  // Nulo = sem prazo. Mora aqui e não em Prova pra não haver dois prazos disputando
+  // qual vale; o assistente de prova preenche todos de uma vez (Fase 10, D7).
+  prazo                 DateTime?
+  ordem                 Int
+  criado_em             DateTime         @default(now())
+
+  turma                   Turma                  @relation(fields: [turma_id], references: [id])
+  prova                   Prova?                 @relation(fields: [prova_id], references: [id])
+  diagramas_mer           DiagramaMer[]
+  submissoes_sql          SubmissaoSql[]
+  respostas_dissertativas RespostaDissertativa[]
+  resultados              ResultadoExercicio[]
+  dicas_ia                DicaIa[]
+
+  @@map("exercicios")
+}
+
+model DiagramaMer {
+  id            String   @id @default(uuid()) @db.Uuid
+  exercicio_id  String   @db.Uuid
+  usuario_id    String   @db.Uuid
+  conteudo_json Json
+  versao        Int      @default(1)
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  exercicio Exercicio @relation(fields: [exercicio_id], references: [id])
+  usuario   Usuario   @relation(fields: [usuario_id], references: [id])
+
+  @@unique([exercicio_id, usuario_id])
+  @@map("diagramas_mer")
+}
+
+model RespostaDissertativa {
+  id            String   @id @default(uuid()) @db.Uuid
+  exercicio_id  String   @db.Uuid
+  usuario_id    String   @db.Uuid
+  texto         String
+  versao        Int      @default(1)
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  exercicio Exercicio @relation(fields: [exercicio_id], references: [id])
+  usuario   Usuario   @relation(fields: [usuario_id], references: [id])
+
+  @@map("respostas_dissertativas")
+}
+
+model ResultadoExercicio {
+  id                     String    @id @default(uuid()) @db.Uuid
+  usuario_id             String    @db.Uuid
+  exercicio_id           String    @db.Uuid
+  sql_correto            Boolean?
+  mer_avaliacao          Decimal?  @db.Decimal(5, 2)
+  dissertativa_avaliacao Decimal?  @db.Decimal(5, 2)
+  acertos                Int       @default(0)
+  erros                  Int       @default(0)
+  pontuacao              Decimal?  @db.Decimal(5, 2)
+  // Marcada quando o aluno dá o exercício por encerrado (reseta o sandbox dele).
+  finalizado_em          DateTime?
+  // O professor concedeu UM envio extra: atravessa tanto o prazo vencido quanto o
+  // envio único da prova, e é limpo assim que o aluno usa (Fase 10, D8).
+  envio_liberado_em      DateTime?
+  revisado               Boolean   @default(false)
+  revisado_em            DateTime?
+  revisado_por           String?   @db.Uuid
+  criado_em              DateTime  @default(now())
+
+  usuario   Usuario   @relation(fields: [usuario_id], references: [id])
+  exercicio Exercicio @relation(fields: [exercicio_id], references: [id])
+
+  @@unique([usuario_id, exercicio_id])
+  @@map("resultados_exercicio")
+}
+
+model SubmissaoSql {
+  id                String          @id @default(uuid()) @db.Uuid
+  exercicio_id      String          @db.Uuid
+  usuario_id        String          @db.Uuid
+  query_sql         String
+  resultado_status  ResultadoStatus
+  linhas_retornadas Int?
+  tempo_execucao_ms Int?
+  correta           Boolean?
+  tentativa_numero  Int
+  criado_em         DateTime        @default(now())
+
+  exercicio        Exercicio       @relation(fields: [exercicio_id], references: [id])
+  usuario          Usuario         @relation(fields: [usuario_id], references: [id])
+  log_execucao_sql LogExecucaoSql?
+
+  @@map("submissoes_sql")
+}
+
+model DicaIa {
+  id             String       @id @default(uuid()) @db.Uuid
+  usuario_id     String       @db.Uuid
+  exercicio_id   String       @db.Uuid
+  contexto       ContextoDica
+  estado_enviado Json
+  prompt_montado String
+  resposta_ia    String
+  modelo_llm     String
+  tokens_usados  Int?
+  criado_em      DateTime     @default(now())
+
+  usuario   Usuario   @relation(fields: [usuario_id], references: [id])
+  exercicio Exercicio @relation(fields: [exercicio_id], references: [id])
+
+  @@map("dicas_ia")
+}
+
+// SessaoUso, RespostaSus, RespostaRtlx, TcleConsentimento migraram pro backend
+// Python self-hosted (dado de sujeito de pesquisa) — ver
+// docs/decisions/fase4-pesquisa-python-sessao-aluno-login.md e a restrição
+// não-negociável no CLAUDE.md. Não recriar essas tabelas aqui.
+
+/**
+ * Sessão de login com estado no servidor. Existe porque o logout precisa revogar de
+ * fato e porque "1 hora de inatividade" tem que significar o que diz — nenhuma das
+ * duas coisas cabe num JWT sozinho (Fase 10, D1; reverte a decisão da Fase 1).
+ */
+model SessaoAuth {
+  id                  String    @id @default(uuid()) @db.Uuid
+  usuario_id          String    @db.Uuid
+  criada_em           DateTime  @default(now())
+  ultima_atividade_em DateTime  @default(now())
+  revogada_em         DateTime?
+
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@index([usuario_id])
+  @@map("sessoes_auth")
+}
+
+model LogExecucaoSql {
+  id           String   @id @default(uuid()) @db.Uuid
+  submissao_id String   @unique @db.Uuid
+  explain_json Json
+  criado_em    DateTime @default(now())
+
+  submissao SubmissaoSql @relation(fields: [submissao_id], references: [id])
+
+  @@map("logs_execucao_sql")
+}
