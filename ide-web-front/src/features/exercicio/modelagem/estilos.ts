@@ -20,7 +20,7 @@ export function classeAlca(somenteLeitura: boolean): string {
 }
 
 /** Fundo, texto e sombra de qualquer nó com caixa (entidade, tabela, associativa). */
-export const CLASSE_CAIXA = 'rounded-sm bg-white text-xs shadow-sm'
+export const CLASSE_CAIXA = 'rounded-sm bg-surface text-xs shadow-sm'
 
 /** Contorno do nó conforme o estado. `destacada` é a sincronização com a consulta SQL. */
 export function classeContorno(selecionado: boolean, destacada = false): string {
@@ -30,7 +30,7 @@ export function classeContorno(selecionado: boolean, destacada = false): string 
 }
 
 /** Rótulo sobre a linha: `(mín,máx)` no conceitual, cardinalidade calculada no lógico. */
-export const CLASSE_ROTULO_LINHA = 'pointer-events-none absolute rounded bg-white/90 px-0.5 text-[10px] text-neutral-700'
+export const CLASSE_ROTULO_LINHA = 'pointer-events-none absolute rounded bg-surface/90 px-0.5 text-[10px] text-neutral-700'
 
 export function estiloLinha(selecionada: boolean, leve = false): { stroke: string; strokeWidth: number } {
   if (selecionada) return { stroke: COR_SELECAO, strokeWidth: ESPESSURA_LINHA.selecionada }

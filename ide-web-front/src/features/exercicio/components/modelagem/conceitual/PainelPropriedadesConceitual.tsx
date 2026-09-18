@@ -34,7 +34,7 @@ interface PainelPropriedadesConceitualProps {
 }
 
 const CLASSE_CAMPO =
-  'w-full rounded-md border border-neutral-300 bg-white px-2 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:bg-neutral-50'
+  'w-full rounded-md border border-neutral-300 bg-surface px-2 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:bg-neutral-50'
 const CLASSE_BOTAO_TEXTO = 'text-xs font-medium text-primary-600 hover:underline disabled:text-neutral-400 disabled:no-underline'
 const CLASSE_BOTAO_PERIGO = 'text-xs font-medium text-danger-600 hover:underline'
 

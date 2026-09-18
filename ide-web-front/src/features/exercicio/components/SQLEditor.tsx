@@ -69,7 +69,7 @@ export const SQLEditor = ({
   const estado: EstadoDica = { estadoSql: value, ...(estadoMer === undefined ? {} : { estadoMer }) }
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-md border border-neutral-300 bg-white">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-md border border-neutral-300 bg-surface">
       <div className="flex flex-wrap items-center gap-2 border-b border-neutral-200 px-2 py-1">
         <span className="text-sm font-medium text-neutral-800">Consulta SQL</span>
         <div className="ml-auto">

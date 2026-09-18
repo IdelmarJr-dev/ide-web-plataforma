@@ -96,7 +96,7 @@ export const MatrizTurma = (): ReactNode => {
               <caption className="sr-only">Situação de cada aluno em cada exercício da turma</caption>
               <thead>
                 <tr>
-                  <th scope="col" className="sticky left-0 z-10 bg-white p-2 font-medium text-neutral-900">
+                  <th scope="col" className="sticky left-0 z-10 bg-surface p-2 font-medium text-neutral-900">
                     Aluno
                   </th>
                   {painel.exercicios.map((exercicio) => (
@@ -109,7 +109,7 @@ export const MatrizTurma = (): ReactNode => {
               <tbody>
                 {painel.alunos.map((aluno) => (
                   <tr key={aluno.id} className="border-t border-neutral-100">
-                    <th scope="row" className="sticky left-0 z-10 bg-white p-2 font-normal text-neutral-900">
+                    <th scope="row" className="sticky left-0 z-10 bg-surface p-2 font-normal text-neutral-900">
                       {aluno.nome}
                     </th>
                     {painel.exercicios.map((exercicio) => {

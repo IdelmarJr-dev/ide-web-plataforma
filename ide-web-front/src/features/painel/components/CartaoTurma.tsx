@@ -13,7 +13,7 @@ export const CartaoTurma = ({ turma }: { turma: TurmaDoPainel }): ReactNode => {
   const progresso = possiveis === 0 ? 0 : Math.round((turma.entregas / possiveis) * 100)
 
   return (
-    <li className="rounded-lg border border-neutral-300 bg-white p-4">
+    <li className="rounded-lg border border-neutral-300 bg-surface p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h3 className="text-base font-semibold text-neutral-900">{turma.nome}</h3>
         {turma.encerradaEm === null ? null : (

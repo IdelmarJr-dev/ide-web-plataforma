@@ -64,7 +64,7 @@ export const ConceitualLogicoEditor = ({
             type="button"
             role="tab"
             aria-selected={abaAtiva === 'conceitual'}
-            className={`${CLASSE_ABA} ${abaAtiva === 'conceitual' ? 'bg-white text-primary-700 shadow-sm' : 'text-neutral-600 hover:text-neutral-900'}`}
+            className={`${CLASSE_ABA} ${abaAtiva === 'conceitual' ? 'bg-surface text-primary-700 shadow-sm' : 'text-neutral-600 hover:text-neutral-900'}`}
             onClick={() => { setAba('conceitual') }}
           >
             1. Conceitual
@@ -76,7 +76,7 @@ export const ConceitualLogicoEditor = ({
             disabled={!logicoLiberado}
             title={logicoLiberado ? undefined : 'Converta o modelo conceitual primeiro'}
             className={`${CLASSE_ABA} disabled:cursor-not-allowed disabled:opacity-50 ${
-              abaAtiva === 'logico' ? 'bg-white text-primary-700 shadow-sm' : 'text-neutral-600 hover:text-neutral-900'
+              abaAtiva === 'logico' ? 'bg-surface text-primary-700 shadow-sm' : 'text-neutral-600 hover:text-neutral-900'
             }`}
             onClick={() => { setAba('logico') }}
           >

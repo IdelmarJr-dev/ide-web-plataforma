@@ -90,7 +90,7 @@ export const RtlxForm = (): ReactNode => {
                     <span
                       aria-hidden="true"
                       className={`block h-5 w-2.5 rounded-sm border ${
-                        marcado ? 'border-primary-700 bg-primary-600' : 'border-neutral-300 bg-white hover:bg-primary-100'
+                        marcado ? 'border-primary-700 bg-primary-600' : 'border-neutral-300 bg-surface hover:bg-primary-100'
                       }`}
                     />
                   </label>

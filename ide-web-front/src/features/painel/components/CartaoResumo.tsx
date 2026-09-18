@@ -9,7 +9,7 @@ interface CartaoResumoProps {
 export const CartaoResumo = ({ rotulo, valor, destaque = false }: CartaoResumoProps): ReactNode => (
   <div
     className={`rounded-lg border p-4 ${
-      destaque && valor > 0 ? 'border-primary-500 bg-primary-50' : 'border-neutral-300 bg-white'
+      destaque && valor > 0 ? 'border-primary-500 bg-primary-50' : 'border-neutral-300 bg-surface'
     }`}
   >
     <span className="block text-2xl font-semibold text-neutral-900">{valor}</span>

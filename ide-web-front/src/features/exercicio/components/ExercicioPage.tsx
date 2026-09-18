@@ -104,7 +104,7 @@ export const ExercicioPage = (): ReactNode => {
       {/* Empilhado por padrão: num header de uma linha só, "truncate" no título espremia
           tudo pra caber ao lado do link e dos botões e sobrava só "S..." em 390px. */}
       <header
-        className="flex flex-col gap-2 border-b border-neutral-200 bg-white px-4 py-2
+        className="flex flex-col gap-2 border-b border-neutral-200 bg-surface px-4 py-2
           sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-2"
       >
         <Link to="/dashboard" className="text-sm font-medium text-primary-600 hover:underline">
@@ -118,7 +118,7 @@ export const ExercicioPage = (): ReactNode => {
         />
       </header>
 
-      <details open className="border-b border-neutral-200 bg-white px-4 py-2">
+      <details open className="border-b border-neutral-200 bg-surface px-4 py-2">
         <summary className="cursor-pointer text-sm font-medium text-neutral-800">Enunciado</summary>
         <p className="mt-1 max-h-32 overflow-auto whitespace-pre-line text-sm text-neutral-700">{exercicio.enunciado}</p>
       </details>

@@ -83,7 +83,7 @@ const RelacionamentoNodeView = ({ data, selected }: NodeProps<RelacionamentoNode
       </div>
 
       {visaoAtributos === 'lista' && atributos.length > 0 ? (
-        <ul className="mt-1 min-w-28 rounded-sm border border-neutral-300 bg-white py-1 text-xs shadow-sm">
+        <ul className="mt-1 min-w-28 rounded-sm border border-neutral-300 bg-surface py-1 text-xs shadow-sm">
           {atributos.map(({ atributo, nivel }) => {
             const ativo = selecao?.tipo === 'atributo' && selecao.id === atributo.id
             return (

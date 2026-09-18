@@ -592,7 +592,7 @@ const ConceitualEditorInterno = ({
         role="application"
         aria-label="Editor do modelo conceitual"
         tabIndex={-1}
-        className="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-md border border-neutral-300 bg-white outline-none"
+        className="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-md border border-neutral-300 bg-surface outline-none"
       >
         <BarraFerramentas
           podeDesfazer={historico.podeDesfazer}
@@ -669,12 +669,12 @@ const ConceitualEditorInterno = ({
               {minimapa ? <MiniMap pannable zoomable style={{ width: 140, height: 90 }} /> : null}
             </ReactFlow>
             {mensagem ? (
-              <p role="alert" className="absolute left-1/2 top-2 z-10 -translate-x-1/2 rounded-md bg-neutral-900 px-3 py-1.5 text-xs text-white shadow">
+              <p role="alert" className="absolute left-1/2 top-2 z-10 -translate-x-1/2 rounded-md bg-zinc-900 px-3 py-1.5 text-xs text-white shadow">
                 {mensagem}
               </p>
             ) : null}
             {painelAberto ? (
-              <div className="absolute inset-y-0 right-0 z-10 flex bg-white shadow-lg">
+              <div className="absolute inset-y-0 right-0 z-10 flex bg-surface shadow-lg">
                 <PainelPropriedadesConceitual
                   conceitual={conceitual}
                   selecao={selecaoValida}
