@@ -18,14 +18,18 @@ const REFRESH_COOKIE_MAX_AGE_MS = REFRESH_COOKIE_MAX_AGE_DAYS * DAY_MS;
 
 function baseCookieOptions(maxAgeMs: number): {
   httpOnly: true;
-  sameSite: 'lax';
+  sameSite: 'lax' | 'none';
   secure: boolean;
   path: string;
   maxAge: number;
 } {
   return {
     httpOnly: true,
-    sameSite: 'lax',
+    // Front (Vercel) e back (Render) são domínios diferentes — cookie cross-site só é
+    // enviado em fetch/XHR com SameSite=None (e isso exige Secure=true, daí o par estar
+    // amarrado ao mesmo isProduction). Em dev, front e back são portas do mesmo host
+    // ("localhost"), então continuam same-site e Lax funciona normalmente.
+    sameSite: config.isProduction ? 'none' : 'lax',
     secure: config.isProduction,
     path: '/',
     maxAge: maxAgeMs,
@@ -42,8 +46,11 @@ export function setAccessCookie(res: Response, accessToken: string): void {
 }
 
 export function clearAuthCookies(res: Response): void {
-  res.clearCookie(ACCESS_TOKEN_COOKIE, { path: '/' });
-  res.clearCookie(REFRESH_TOKEN_COOKIE, { path: '/' });
+  // Precisa repetir sameSite/secure daqui de cima: o navegador só sobrescreve um cookie
+  // existente se esses atributos baterem com os que ele foi gravado.
+  const options = { path: '/', sameSite: config.isProduction ? ('none' as const) : ('lax' as const), secure: config.isProduction };
+  res.clearCookie(ACCESS_TOKEN_COOKIE, options);
+  res.clearCookie(REFRESH_TOKEN_COOKIE, options);
 }
 
 export function getAccessTokenCookie(cookies: Record<string, string | undefined>): string | undefined {
