@@ -21,7 +21,7 @@ export const ModelagemLivre = ({ onUsarSql }: ModelagemLivreProps): ReactNode =>
   const sqlDoModelo = useMemo(() => gerarSql(editavel.documento.logico ?? LOGICO_VAZIO), [editavel.documento.logico])
 
   return (
-    <div className="flex h-[70vh] flex-col gap-2">
+    <div className="flex h-[82vh] flex-col gap-2">
       <div className="min-h-0 flex-1">
         <EditorModelagem
           editavel={editavel}

@@ -66,7 +66,7 @@ export const EstudoLivrePage = (): ReactNode => {
   const [sql, setSql] = useState('')
 
   return (
-    <div className="mx-auto max-w-5xl p-6">
+    <div className="mx-auto max-w-7xl p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-xl font-semibold text-neutral-900">Estudar sozinho</h1>

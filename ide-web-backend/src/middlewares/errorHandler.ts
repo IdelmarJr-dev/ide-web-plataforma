@@ -28,7 +28,7 @@ export function errorHandler(
   res.status(HTTP_INTERNAL_SERVER_ERROR).json({
     error: {
       code: 'INTERNAL_SERVER_ERROR',
-      message: 'An unexpected error occurred',
+      message: 'Ocorreu um erro inesperado',
     },
   });
 }
