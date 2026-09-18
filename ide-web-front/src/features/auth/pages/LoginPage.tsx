@@ -25,9 +25,9 @@ export const LoginPage = (): ReactNode => {
             </Link>
           </p>
           <p className="mt-1 text-sm text-neutral-600">
-            É aluno?{' '}
-            <Link to="/turma" className="font-medium text-primary-600 hover:underline">
-              Entrar com o código da turma
+            É aluno e tem o código da turma?{' '}
+            <Link to="/registro?papel=aluno" className="font-medium text-primary-600 hover:underline">
+              Criar conta e já entrar na turma
             </Link>
           </p>
         </div>

@@ -37,7 +37,7 @@ export const HeroLanding = (): ReactNode => {
               Entrar
             </a>
             <Link
-              to="/registro"
+              to="/registro?papel=aluno"
               className="inline-flex items-center justify-center rounded-md border border-neutral-700 px-4 py-2
                 text-sm font-medium text-neutral-50 transition-colors hover:border-neutral-300"
             >

@@ -13,6 +13,14 @@ const POLL_INTERVAL_MS = 5000
  */
 const FALHAS_ATE_DESISTIR = 3
 
+/**
+ * Sem essa variável configurada, o backend de pesquisa não tem endereço de produção —
+ * só existe localmente ou no servidor self-hosted do autor. Sem essa checagem, todo
+ * aluno em produção batia em `localhost:8001` a cada 5s até desistir (Fase 9, D22 já
+ * reduzia o dano, mas não evitava a primeira rodada de erros).
+ */
+const RESEARCH_API_CONFIGURADA = import.meta.env.VITE_RESEARCH_API_URL !== undefined
+
 /** `false` = não reagenda. Exportada para ser testável sem depender de timers. */
 export function intervaloDePolling(falhasConsecutivas: number): number | false {
   return falhasConsecutivas >= FALHAS_ATE_DESISTIR ? false : POLL_INTERVAL_MS
@@ -26,7 +34,7 @@ export function useMinhaParticipacao(enabled = true): UseQueryResult<MinhaPartic
   return useQuery<MinhaParticipacao>({
     queryKey: MINHA_PARTICIPACAO_QUERY_KEY,
     queryFn: pesquisaService.minhaParticipacao,
-    enabled,
+    enabled: enabled && RESEARCH_API_CONFIGURADA,
     refetchInterval: (query) => intervaloDePolling(query.state.fetchFailureCount),
     retry: false,
   })

@@ -3,6 +3,9 @@ import type { ChangeEvent, ReactNode, SyntheticEvent } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from '~components/Button/Button'
 import { Input } from '~components/Input/Input'
+// Import concreto (não pelo índice `~features/painel`, que reexporta componentes de
+// volta pra esta mesma feature via PainelAluno e criaria um ciclo de módulos).
+import { PAINEL_ALUNO_QUERY_KEY } from '~features/painel/hooks/usePainel'
 import { TURMAS_QUERY_KEY } from '../hooks/queryKeys'
 import { turmasService } from '../services/turmasService'
 import { matricularSchema } from '../types'
@@ -22,6 +25,9 @@ export const EntrarTurmaForm = (): ReactNode => {
     onSuccess: () => {
       setCodigo('')
       void queryClient.invalidateQueries({ queryKey: TURMAS_QUERY_KEY })
+      // Sem isto, os cartões do painel (Turmas, Falta fazer) ficam com o estado antigo
+      // até um F5 manual, mesmo a matrícula já tendo funcionado.
+      void queryClient.invalidateQueries({ queryKey: PAINEL_ALUNO_QUERY_KEY })
     },
   })
 

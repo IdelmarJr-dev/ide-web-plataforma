@@ -1,4 +1,4 @@
-import { criarClienteExecucao } from '../../lib/sandboxDb';
+import { conectar, criarClienteExecucao } from '../../lib/sandboxDb';
 import { nomeRoleExecucao } from '../../utils/sandboxSchema';
 
 export interface SandboxExecucaoSucesso {
@@ -35,7 +35,7 @@ export class PgSandboxExecutionRepository implements SandboxExecutionRepository 
     timeoutMs: number,
   ): Promise<SandboxExecucaoResultado> {
     const client = criarClienteExecucao();
-    await client.connect();
+    await conectar(client);
 
     try {
       // A conexão autentica como sandbox_login (sem privilégio próprio) e assume aqui
@@ -65,7 +65,7 @@ export class PgSandboxExecutionRepository implements SandboxExecutionRepository 
    */
   async explain(schemaName: string, usuarioId: string, sql: string, timeoutMs: number): Promise<unknown> {
     const client = criarClienteExecucao();
-    await client.connect();
+    await conectar(client);
 
     try {
       await client.query(`SET ROLE "${nomeRoleExecucao(usuarioId)}"`);

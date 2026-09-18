@@ -1,4 +1,4 @@
-import { criarClienteProvisionamento } from '../../lib/sandboxDb';
+import { conectar, criarClienteProvisionamento } from '../../lib/sandboxDb';
 import { nomeRoleExecucao } from '../../utils/sandboxSchema';
 import type { Client } from 'pg';
 
@@ -17,7 +17,7 @@ export interface SandboxProvisioningRepository {
 export class PgSandboxProvisioningRepository implements SandboxProvisioningRepository {
   async garantirSchema(schemaName: string, usuarioId: string, sqlSetup: string | null): Promise<void> {
     const client = criarClienteProvisionamento();
-    await client.connect();
+    await conectar(client);
 
     try {
       const roleExecucao = await this.garantirRoleExecucao(client, usuarioId);
@@ -60,7 +60,7 @@ export class PgSandboxProvisioningRepository implements SandboxProvisioningRepos
    */
   async garantirSchemaLivre(schemaName: string, usuarioId: string): Promise<void> {
     const client = criarClienteProvisionamento();
-    await client.connect();
+    await conectar(client);
 
     try {
       const roleExecucao = await this.garantirRoleExecucao(client, usuarioId);
@@ -103,7 +103,7 @@ export class PgSandboxProvisioningRepository implements SandboxProvisioningRepos
 
   async dropSchema(schemaName: string): Promise<void> {
     const client = criarClienteProvisionamento();
-    await client.connect();
+    await conectar(client);
 
     try {
       await client.query(`DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`);

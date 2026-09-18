@@ -33,8 +33,13 @@ export const AssistenteProva = ({ turmaId }: { turmaId: string }): ReactNode => 
       }),
     onSuccess: () => {
       setTitulo('')
+      setQuantidade('5')
       void queryClient.invalidateQueries({ queryKey: ['turmas', turmaId, 'provas'] })
       void queryClient.invalidateQueries({ queryKey: ['turmas', turmaId, 'exercicios'] })
+      // Sem isto, o acervo ficava com a contagem antiga até um refetch por conta própria
+      // (ex.: foco de janela) — daí o aviso "insuficiente" reaparecer contra a quantidade
+      // antiga digitada, ao lado da mensagem de sucesso que ainda não tinha sumido.
+      void queryClient.invalidateQueries({ queryKey: ['turmas', turmaId, 'provas', 'acervo'] })
     },
   })
 
