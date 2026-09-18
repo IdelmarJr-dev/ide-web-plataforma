@@ -21,21 +21,21 @@ export const provaRoutes = Router();
 provaRoutes.post(
   '/turmas/:turmaId/provas',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => provaController.criar(req, res)),
 );
 
 provaRoutes.get(
   '/turmas/:turmaId/provas',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => provaController.listarPorTurma(req, res)),
 );
 
 provaRoutes.post(
   '/turmas/:turmaId/sortear-provas',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => provaController.sortear(req, res)),
 );
 
@@ -43,13 +43,13 @@ provaRoutes.post(
 provaRoutes.get(
   '/turmas/:turmaId/provas/acervo',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => provaController.acervo(req, res)),
 );
 
 provaRoutes.post(
   '/turmas/:turmaId/provas/assistente',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => provaController.montarComAssistente(req, res)),
 );

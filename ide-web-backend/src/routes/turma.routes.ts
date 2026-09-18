@@ -17,7 +17,7 @@ export const turmaRoutes = Router();
 turmaRoutes.post(
   '/turmas',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => turmaController.criar(req, res)),
 );
 
@@ -26,21 +26,21 @@ turmaRoutes.get('/turmas/minhas', requireAuth, asyncHandler((req, res) => turmaC
 turmaRoutes.get(
   '/turmas/:id/alunos',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => turmaController.listarAlunos(req, res)),
 );
 
 turmaRoutes.post(
   '/turmas/:id/encerrar',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => turmaController.encerrar(req, res)),
 );
 
 turmaRoutes.post(
   '/turmas/:id/reabrir',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => turmaController.reabrir(req, res)),
 );
 

@@ -118,7 +118,7 @@ export const AppRoutes = (): ReactNode => {
     {
       path: '/admin/turmas',
       element: (
-        <AuthGuard roles={['professor']}>
+        <AuthGuard roles={['professor', 'pesquisador']}>
           <AdminTurmasPage />
         </AuthGuard>
       ),
@@ -135,7 +135,7 @@ export const AppRoutes = (): ReactNode => {
     {
       path: '/admin/turmas/:turmaId/alunos/:usuarioId',
       element: (
-        <AuthGuard roles={['professor']}>
+        <AuthGuard roles={['professor', 'pesquisador']}>
           <RevisaoAluno />
         </AuthGuard>
       ),
@@ -144,7 +144,7 @@ export const AppRoutes = (): ReactNode => {
     {
       path: '/admin/turmas/:turmaId/painel',
       element: (
-        <AuthGuard roles={['professor']}>
+        <AuthGuard roles={['professor', 'pesquisador']}>
           <MatrizTurma />
         </AuthGuard>
       ),
@@ -152,7 +152,7 @@ export const AppRoutes = (): ReactNode => {
     {
       path: '/admin/turmas/:turmaId/exercicios/:exercicioId/revisar',
       element: (
-        <AuthGuard roles={['professor']}>
+        <AuthGuard roles={['professor', 'pesquisador']}>
           <RevisaoTurmaPage />
         </AuthGuard>
       ),
@@ -160,7 +160,7 @@ export const AppRoutes = (): ReactNode => {
     {
       path: '/admin/turmas/:turmaId/exercicios/:exercicioId/revisar/:usuarioId',
       element: (
-        <AuthGuard roles={['professor']}>
+        <AuthGuard roles={['professor', 'pesquisador']}>
           <RevisaoAlunoPage />
         </AuthGuard>
       ),

@@ -43,10 +43,10 @@ export const DashboardPage = (): ReactNode => {
         </Button>
       </div>
 
-      <div className="mt-8">
-        {usuario?.papel === 'professor' ? <PainelProfessor /> : null}
-        {usuario?.papel === 'aluno' ? <PainelAluno /> : null}
+      <div className="mt-8 flex flex-col gap-6">
         {usuario?.papel === 'pesquisador' ? <PainelPesquisador /> : null}
+        {usuario?.papel === 'professor' || usuario?.papel === 'pesquisador' ? <PainelProfessor /> : null}
+        {usuario?.papel === 'aluno' ? <PainelAluno /> : null}
       </div>
     </div>
   )

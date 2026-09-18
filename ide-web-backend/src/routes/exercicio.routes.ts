@@ -54,14 +54,14 @@ export const exercicioRoutes = Router();
 exercicioRoutes.post(
   '/exercicios',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => exercicioController.criar(req, res)),
 );
 
 exercicioRoutes.patch(
   '/exercicios/:id',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => exercicioController.atualizar(req, res)),
 );
 
@@ -87,21 +87,21 @@ exercicioRoutes.get(
 exercicioRoutes.patch(
   '/exercicios/:exercicioId/alunos/:usuarioId/resultado',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => resultadoController.revisar(req, res)),
 );
 
 exercicioRoutes.post(
   '/exercicios/:id/liberar-gabarito',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => resultadoController.liberarGabarito(req, res)),
 );
 
 exercicioRoutes.post(
   '/exercicios/:id/ocultar-gabarito',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => resultadoController.ocultarGabarito(req, res)),
 );
 
@@ -116,7 +116,7 @@ exercicioRoutes.get(
 exercicioRoutes.post(
   '/exercicios/:id/alunos/:usuarioId/liberar-envio',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => resultadoController.liberarEnvio(req, res)),
 );
 
@@ -124,13 +124,13 @@ exercicioRoutes.post(
 exercicioRoutes.get(
   '/exercicios/:exercicioId/alunos/:usuarioId/respostas',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => resultadoController.respostasDoAluno(req, res)),
 );
 
 exercicioRoutes.get(
   '/exercicios/:exercicioId/alunos/:usuarioId/resultado',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => resultadoController.resultadoDoAluno(req, res)),
 );

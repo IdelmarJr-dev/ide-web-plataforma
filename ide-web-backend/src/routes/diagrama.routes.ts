@@ -55,6 +55,6 @@ diagramaRoutes.get(
 diagramaRoutes.get(
   '/exercicios/:exercicioId/alunos/:usuarioId/diagrama',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => diagramaMerController.buscarDoAluno(req, res)),
 );
