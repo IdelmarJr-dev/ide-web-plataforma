@@ -36,7 +36,7 @@ describe('LoginForm', () => {
     const user = userEvent.setup()
 
     await user.type(screen.getByLabelText(/e-mail/i), 'aluno@exemplo.com')
-    await user.type(screen.getByLabelText(/senha/i), 'senha-super-secreta')
+    await user.type(screen.getByLabelText('Senha'), 'senha-super-secreta')
     await user.click(screen.getByRole('button', { name: /entrar/i }))
 
     expect(screen.queryByText(/informe um e-mail válido/i)).not.toBeInTheDocument()
