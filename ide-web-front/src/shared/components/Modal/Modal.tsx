@@ -35,14 +35,14 @@ export const Modal = ({ title, isOpen, onClose, children, size = 'md', fecharCom
       <button
         type="button"
         aria-label="Fechar"
-        className="absolute inset-0 bg-neutral-900/50"
+        className="absolute inset-0 bg-black/50"
         onClick={onClose}
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
-        className={`relative z-10 mx-4 w-full ${SIZE_CLASSES[size]} rounded-md bg-white p-6 shadow-lg`}
+        className={`relative z-10 mx-4 w-full ${SIZE_CLASSES[size]} rounded-md bg-surface p-6 shadow-lg`}
       >
         <h2 id="modal-title" className="text-lg font-semibold text-neutral-900">
           {title}

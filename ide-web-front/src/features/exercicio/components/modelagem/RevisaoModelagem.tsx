@@ -74,7 +74,7 @@ export const RevisaoModelagem = ({ exercicioId, usuarioId, modoExercicio, gabari
             type="button"
             role="tab"
             aria-selected={fonte === 'aluno'}
-            className={`${CLASSE_ABA} ${fonte === 'aluno' ? 'bg-white text-primary-700 shadow-sm' : 'text-neutral-600 hover:text-neutral-900'}`}
+            className={`${CLASSE_ABA} ${fonte === 'aluno' ? 'bg-surface text-primary-700 shadow-sm' : 'text-neutral-600 hover:text-neutral-900'}`}
             onClick={() => { setFonte('aluno') }}
           >
             Modelo do aluno
@@ -86,7 +86,7 @@ export const RevisaoModelagem = ({ exercicioId, usuarioId, modoExercicio, gabari
             disabled={!temGabarito}
             title={temGabarito ? undefined : 'Este exercício não tem gabarito de modelagem'}
             className={`${CLASSE_ABA} disabled:cursor-not-allowed disabled:opacity-50 ${
-              fonte === 'gabarito' ? 'bg-white text-primary-700 shadow-sm' : 'text-neutral-600 hover:text-neutral-900'
+              fonte === 'gabarito' ? 'bg-surface text-primary-700 shadow-sm' : 'text-neutral-600 hover:text-neutral-900'
             }`}
             onClick={() => { setFonte('gabarito') }}
           >

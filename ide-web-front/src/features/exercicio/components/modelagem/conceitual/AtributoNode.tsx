@@ -31,7 +31,7 @@ const AtributoNodeView = ({ data, selected }: NodeProps<AtributoNodeTipo>): Reac
       data-testid="atributo-node"
       data-multivalorado={multivalorado || undefined}
       title={multivalorado ? 'Atributo multivalorado' : composto ? 'Atributo composto' : undefined}
-      className={`flex h-12 w-24 items-center justify-center rounded-full bg-white px-2 text-center text-[11px] shadow-sm
+      className={`flex h-12 w-24 items-center justify-center rounded-full bg-surface px-2 text-center text-[11px] shadow-sm
         ${classeContorno(selected)} ${multivalorado ? 'outline outline-2 outline-offset-2 outline-neutral-700' : ''}`}
       onDoubleClick={() => {
         if (!somenteLeitura) setEditandoNome(true)
@@ -45,7 +45,7 @@ const AtributoNodeView = ({ data, selected }: NodeProps<AtributoNodeTipo>): Reac
         <input
           ref={campoNomeRef}
           aria-label="Nome do atributo"
-          className="nodrag w-full rounded border border-primary-500 bg-white px-1 text-center text-[11px] outline-none"
+          className="nodrag w-full rounded border border-primary-500 bg-surface px-1 text-center text-[11px] outline-none"
           value={atributo.nome}
           onChange={(evento) => { renomearElemento(atributo.id, evento.target.value) }}
           onBlur={terminarEdicao}

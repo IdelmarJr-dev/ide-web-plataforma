@@ -4,6 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IDE Web — Aprenda SQL e MER na prática</title>
+    <script>
+      // Mesma chave/regra do TemaProvider — roda antes do CSS pintar pra não piscar o tema errado.
+      (function () {
+        var tema = localStorage.getItem('tema')
+        var escuro = tema === 'escuro' || (tema !== 'claro' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        if (escuro) document.documentElement.classList.add('dark')
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

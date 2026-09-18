@@ -25,7 +25,7 @@ export const SqlModeloPainel = ({ sql, tabelaDestacada }: SqlModeloPainelProps):
   }
 
   return (
-    <details open className="group shrink-0 rounded-md border border-neutral-300 bg-white">
+    <details open className="group shrink-0 rounded-md border border-neutral-300 bg-surface">
       <summary className="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm font-medium text-neutral-900">
         <span>SQL do modelo</span>
         <span className="text-xs font-normal text-neutral-600">gerado automaticamente, não é executado</span>

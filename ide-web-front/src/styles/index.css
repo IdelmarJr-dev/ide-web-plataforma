@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+/* Ativa a variante `dark:` por classe (`.dark` na raiz) em vez de só seguir o SO — necessário
+   pra alternância manual persistida (ver TemaProvider) coexistir com a preferência do sistema. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /**
  * Design tokens — cores, espaçamento e tipografia centralizados.
  * Nunca usar valores mágicos de cor/px direto nos componentes; usar as
@@ -29,6 +33,10 @@
   --color-neutral-900: oklch(0.18 0 0);
   --color-neutral-950: oklch(0.13 0 0);
 
+  /* Superfície de cartão/painel — separado de `white` porque `white` também serve pra texto/borda
+     fixos sobre botão colorido (ex.: Button.tsx), que não pode escurecer no tema escuro. */
+  --color-surface: #fff;
+
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
@@ -36,11 +44,44 @@
 }
 
 body {
-  @apply bg-neutral-50 font-sans text-neutral-900 antialiased;
+  @apply bg-neutral-50 font-sans text-neutral-900 antialiased transition-colors duration-200;
 }
 
 /* Sincronização MER ↔ SQL: trechos do editor SQL correspondentes à seleção no MER (decoration do Monaco). */
 .mer-sync-destaque {
   background-color: var(--color-primary-100);
   border-radius: 2px;
+}
+
+/*
+ * Tema escuro: reaproveita os mesmos nomes de token (neutral/white/tints), então a maioria dos
+ * componentes já herda o tema sem precisar de variante `dark:` espalhada — só invertemos o que a
+ * cor representa. Exceções tratadas à parte: `white` (papel de texto/borda fixos, não mexe aqui),
+ * a cortina do Modal e o hero da landing (`bg-black`/`zinc-*`, imunes de propósito a este bloco), e
+ * os tons 700 de acento (só aparecem como texto sobre o tint 50/100, por isso clareiam junto).
+ */
+:root.dark {
+  --color-surface: oklch(0.2 0 0);
+
+  --color-neutral-50: oklch(0.16 0 0);
+  --color-neutral-100: oklch(0.21 0 0);
+  --color-neutral-200: oklch(0.27 0 0);
+  --color-neutral-300: oklch(0.34 0 0);
+  --color-neutral-400: oklch(0.46 0 0);
+  --color-neutral-500: oklch(0.58 0 0);
+  --color-neutral-600: oklch(0.68 0 0);
+  --color-neutral-700: oklch(0.76 0 0);
+  --color-neutral-800: oklch(0.85 0 0);
+  --color-neutral-900: oklch(0.93 0 0);
+  --color-neutral-950: oklch(0.97 0 0);
+
+  --color-primary-50: oklch(0.24 0.05 250);
+  --color-primary-100: oklch(0.3 0.07 250);
+  --color-primary-700: oklch(0.78 0.12 250);
+
+  --color-success-50: oklch(0.22 0.05 150);
+  --color-success-700: oklch(0.75 0.13 150);
+
+  --color-danger-50: oklch(0.26 0.07 25);
+  --color-danger-700: oklch(0.78 0.18 25);
 }

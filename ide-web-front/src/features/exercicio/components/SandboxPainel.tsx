@@ -101,7 +101,7 @@ export const SandboxPainel = ({ exercicioId, sql, ehProva = false }: SandboxPain
   const resultado = enviarMutation.data ?? testarMutation.data
 
   return (
-    <div className="flex max-h-[45vh] shrink-0 flex-col gap-3 overflow-auto rounded-md border border-neutral-300 bg-white p-3">
+    <div className="flex max-h-[45vh] shrink-0 flex-col gap-3 overflow-auto rounded-md border border-neutral-300 bg-surface p-3">
       {ehProva ? (
         <p className="rounded-md border border-primary-500 bg-primary-50 p-2 text-xs text-neutral-800">
           Questão de prova: você não pode testar a consulta, e o envio é único.

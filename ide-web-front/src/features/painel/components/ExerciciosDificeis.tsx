@@ -11,8 +11,11 @@ function porcentagem(valor: number | null): string {
   return valor === null ? 'sem dados' : `${Math.round(valor * 100)}%`
 }
 
+// Média de contagens inteiras (tentativas, dicas): só mostra casa decimal quando ela existe de
+// verdade, senão "1.0"/"0.0" parecem valores fracionários que não fazem sentido pra esses dados.
 function media(valor: number | null): string {
-  return valor === null ? 'sem dados' : valor.toFixed(1)
+  if (valor === null) return 'sem dados'
+  return Number.isInteger(valor) ? String(valor) : valor.toFixed(1)
 }
 
 /**
@@ -46,7 +49,7 @@ export const ExerciciosDificeis = ({ exercicios, dificuldade }: ExerciciosDifice
               </th>
               <td className="p-2 text-neutral-700">{porcentagem(item.taxaAcerto)}</td>
               <td className="p-2 text-neutral-700">{media(item.mediaTentativas)}</td>
-              <td className="p-2 text-neutral-700">{item.dicasPorAluno.toFixed(1)}</td>
+              <td className="p-2 text-neutral-700">{media(item.dicasPorAluno)}</td>
             </tr>
           ))}
         </tbody>

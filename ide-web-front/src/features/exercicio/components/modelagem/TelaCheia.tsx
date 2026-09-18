@@ -23,7 +23,7 @@ export const TelaCheia = ({ children }: { children: ReactNode }): ReactNode => {
   }, [cheia])
 
   return (
-    <div className={cheia ? 'fixed inset-0 z-50 flex flex-col gap-2 bg-white p-4' : 'flex h-full w-full flex-col'}>
+    <div className={cheia ? 'fixed inset-0 z-50 flex flex-col gap-2 bg-surface p-4' : 'flex h-full w-full flex-col'}>
       <div className="flex justify-end">
         <button
           type="button"

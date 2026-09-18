@@ -11,7 +11,7 @@ import { PainelAluno, PainelProfessor } from '~features/painel'
 const PainelPesquisador = (): ReactNode => (
   <Link
     to="/admin/pesquisa"
-    className="block rounded-lg border border-neutral-300 bg-white p-4 transition-colors hover:border-primary-400
+    className="block rounded-lg border border-neutral-300 bg-surface p-4 transition-colors hover:border-primary-400
       hover:bg-primary-50/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-500"
   >
     <span className="text-sm font-semibold text-neutral-900">Pesquisa</span>
