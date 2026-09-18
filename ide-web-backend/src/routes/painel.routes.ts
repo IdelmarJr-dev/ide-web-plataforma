@@ -22,7 +22,7 @@ export const painelRoutes = Router();
 painelRoutes.get(
   '/painel/professor',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => painelController.doProfessor(req, res)),
 );
 
@@ -37,7 +37,7 @@ painelRoutes.get(
 painelRoutes.get(
   '/turmas/:turmaId/alunos/:usuarioId/atividades',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => painelController.atividadesDoAluno(req, res)),
 );
 
@@ -45,6 +45,6 @@ painelRoutes.get(
 painelRoutes.get(
   '/turmas/:id/painel',
   requireAuth,
-  requirePapel('professor'),
+  requirePapel('professor', 'pesquisador'),
   asyncHandler((req, res) => painelController.daTurma(req, res)),
 );

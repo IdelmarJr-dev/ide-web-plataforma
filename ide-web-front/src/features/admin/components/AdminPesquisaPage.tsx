@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import { Button } from '~components/Button/Button'
 // Import direto (não pelo barrel `~features/exercicio`), que puxaria a ExercicioPage com o Monaco.
 import { exercicioService } from '~features/exercicio/services/exercicioService'
@@ -30,7 +31,10 @@ export const AdminPesquisaPage = (): ReactNode => {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
       <div>
-        <h1 className="text-xl font-semibold text-neutral-900">Pesquisa do TCC</h1>
+        <Link to="/dashboard" className="text-sm font-medium text-primary-600 hover:underline">
+          ← Voltar ao painel
+        </Link>
+        <h1 className="mt-3 text-xl font-semibold text-neutral-900">Pesquisa do TCC</h1>
         <p className="mt-1 text-sm text-neutral-600">
           Os alunos da turma veem o convite (TCLE) assim que a pesquisa é iniciada. O sorteio dos grupos só considera
           quem aceitou o termo.

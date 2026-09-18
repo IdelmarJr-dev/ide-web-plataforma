@@ -6,6 +6,7 @@ import {
   toExercicioProfessorResponseDto,
 } from '../dtos/exercicio.dto';
 import { UnauthorizedError, ValidationError } from '../errors';
+import type { Papel } from '../generated/prisma/client';
 import type { ExercicioService } from '../services/ExercicioService';
 import { BaseController } from './BaseController';
 
@@ -53,10 +54,9 @@ export class ExercicioController extends BaseController {
     const exercicioId = req.params.id ?? '';
     const exercicio = await this.exercicioService.buscarPorId(req.usuario.id, req.usuario.papel, exercicioId);
 
-    const dto =
-      req.usuario.papel === 'professor'
-        ? toExercicioProfessorResponseDto(exercicio)
-        : toExercicioAlunoResponseDto(exercicio);
+    const dto = vePapelDeGestor(req.usuario.papel)
+      ? toExercicioProfessorResponseDto(exercicio)
+      : toExercicioAlunoResponseDto(exercicio);
 
     this.handleSuccess(res, dto);
   };
@@ -75,11 +75,15 @@ export class ExercicioController extends BaseController {
     const turmaId = req.params.turmaId ?? '';
     const exercicios = await this.exercicioService.listarPorTurma(req.usuario.id, req.usuario.papel, turmaId);
 
-    const dto =
-      req.usuario.papel === 'professor'
-        ? exercicios.map(toExercicioProfessorResponseDto)
-        : exercicios.map(toExercicioAlunoResponseDto);
+    const dto = vePapelDeGestor(req.usuario.papel)
+      ? exercicios.map(toExercicioProfessorResponseDto)
+      : exercicios.map(toExercicioAlunoResponseDto);
 
     this.handleSuccess(res, dto);
   };
+}
+
+/** professor e pesquisador enxergam o exercício com gabarito; aluno, sem. */
+function vePapelDeGestor(papel: Papel): boolean {
+  return papel === 'professor' || papel === 'pesquisador';
 }
