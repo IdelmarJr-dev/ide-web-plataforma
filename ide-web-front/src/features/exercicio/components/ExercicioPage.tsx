@@ -102,9 +102,10 @@ export const ExercicioPage = (): ReactNode => {
   return (
     <div className="flex min-h-screen flex-col lg:h-screen">
       {/* Empilhado por padrão: num header de uma linha só, "truncate" no título espremia
-          tudo pra caber ao lado do link e dos botões e sobrava só "S..." em 390px. */}
+          tudo pra caber ao lado do link e dos botões e sobrava só "S..." em 390px.
+          `pr-14` reserva espaço pro BotaoTema flutuante no canto superior direito. */}
       <header
-        className="flex flex-col gap-2 border-b border-neutral-200 bg-surface px-4 py-2
+        className="flex flex-col gap-2 border-b border-neutral-200 bg-surface py-2 pl-4 pr-14
           sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-2"
       >
         <Link to="/dashboard" className="text-sm font-medium text-primary-600 hover:underline">
