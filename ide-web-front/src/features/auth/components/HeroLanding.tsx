@@ -13,7 +13,7 @@ export const HeroLanding = (): ReactNode => {
       }}
     >
       <nav className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
-        <span className="font-mono text-sm font-semibold tracking-tight text-neutral-50">IDE Web</span>
+        <span className="font-mono text-xl font-bold tracking-tight text-neutral-50">IDE Web</span>
         <a href="#acesso" className="text-sm font-medium text-neutral-300 hover:text-neutral-50">
           Entrar
         </a>
