@@ -13,7 +13,7 @@ interface ModalProps {
 
 const SIZE_CLASSES: Record<NonNullable<ModalProps['size']>, string> = {
   md: 'max-w-md',
-  xl: 'max-w-6xl',
+  xl: 'max-w-[95vw]',
 }
 
 export const Modal = ({ title, isOpen, onClose, children, size = 'md', fecharComEsc = true }: ModalProps): ReactNode => {

@@ -125,7 +125,7 @@ export const ExercicioPage = (): ReactNode => {
 
       <main
         className={`grid min-h-0 flex-1 grid-cols-1 gap-3 p-3 ${
-          duasColunas ? 'lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]' : ''
+          duasColunas ? 'lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]' : ''
         } ${duasColunas && exercicio.temDissertativa ? 'lg:grid-rows-[minmax(0,1fr)_auto]' : ''}`}
       >
         {exercicio.temMer ? (
