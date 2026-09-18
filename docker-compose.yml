@@ -1,0 +1,85 @@
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: ide_web
+      POSTGRES_USER: ide_app
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ide_app -d ide_web"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  db_sandbox:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: ide_sandbox
+      POSTGRES_USER: ide_sandbox_admin
+      POSTGRES_PASSWORD: ${SANDBOX_DB_PASSWORD}
+      SANDBOX_EXEC_DB_PASSWORD: ${SANDBOX_EXEC_DB_PASSWORD}
+      # A imagem postgres:18 recusa inicializar se o ponto de montagem não estiver
+      # vazio (checagem nova da própria imagem) — em Podman rootless, um volume novo
+      # às vezes já nasce com um `lost+found`, o que dispara essa recusa. PGDATA num
+      # subdiretório do mount evita o falso positivo. Sem relação com a Fase 12; achado
+      # ao validar a suíte de caracterização nova neste ambiente.
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_sandbox_data:/var/lib/postgresql/data
+      - ./ide-web-backend/scripts/sandbox-init.sh:/docker-entrypoint-initdb.d/sandbox-init.sh:ro,z
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ide_sandbox_admin -d ide_sandbox"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./ide-web-backend
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      CORS_ORIGIN: http://localhost:8080
+      DATABASE_URL: postgresql://ide_app:${DB_PASSWORD}@db:5432/ide_web?schema=public
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ACCESS_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+      RESEARCH_JWT_SECRET: ${RESEARCH_JWT_SECRET}
+      RESEARCH_JWT_EXPIRES_IN: 30m
+      LLM_API_KEY: ${LLM_API_KEY}
+      SANDBOX_DATABASE_URL: postgresql://ide_sandbox_admin:${SANDBOX_DB_PASSWORD}@db_sandbox:5432/ide_sandbox?schema=public
+      SANDBOX_EXEC_DATABASE_URL: postgresql://sandbox_login:${SANDBOX_EXEC_DB_PASSWORD}@db_sandbox:5432/ide_sandbox?schema=public
+      SANDBOX_STATEMENT_TIMEOUT_MS: 5000
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      db_sandbox:
+        condition: service_healthy
+
+  # O backend de pesquisa (Python/FastAPI, self-hosted) NÃO mora neste repositório —
+  # é infraestrutura exclusiva do período de coleta de dados do TCC, mantida à parte
+  # (mesmo diretório onde fica o texto do TCC) e nunca publicada como open source.
+  # Pra rodá-lo localmente, suba o compose próprio dele e aponte VITE_RESEARCH_API_URL
+  # pro endereço resultante. Ver docs/decisions/fase4-pesquisa-python-sessao-aluno-login.md.
+  frontend:
+    build:
+      context: ./ide-web-front
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_RESEARCH_API_URL: ${VITE_RESEARCH_API_URL}
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
+  db_sandbox_data:

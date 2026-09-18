@@ -1,0 +1,7 @@
+export { PainelProfessor } from './components/PainelProfessor'
+export { PainelAluno } from './components/PainelAluno'
+export { MatrizTurma } from './components/MatrizTurma'
+export { RevisaoAluno } from './components/RevisaoAluno'
+export { painelService } from './services/painelService'
+export * from './types'
+export * from './filtroTurmas'
