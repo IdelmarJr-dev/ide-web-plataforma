@@ -15,11 +15,75 @@ export type SandboxExecucaoResultado = SandboxExecucaoSucesso | SandboxExecucaoE
 
 const CODIGO_ERRO_SINTAXE_PREFIXO = '42';
 
-function classificarErro(error: unknown): SandboxExecucaoErro {
+interface ErroPostgres extends Error {
+  code?: string;
+  table?: string;
+  column?: string;
+  constraint?: string;
+}
+
+// node-postgres só preenche table/column/constraint pra alguns códigos (violação de
+// restrição); nos demais (sintaxe, relação/coluna inexistente) o identificador só
+// aparece entre aspas dentro da mensagem em inglês do próprio Postgres.
+const REGEX_IDENTIFICADOR = /"([^"]+)"/g;
+
+function extrairIdentificadores(mensagem: string): string[] {
+  return [...mensagem.matchAll(REGEX_IDENTIFICADOR)]
+    .map((correspondencia) => correspondencia[1])
+    .filter((valor): valor is string => valor !== undefined);
+}
+
+function quotar(valor?: string): string {
+  return valor ? `"${valor}"` : 'informada';
+}
+
+// Mensagens do driver `pg` vêm em inglês (idioma do servidor Postgres) — como isso é
+// visível direto pro aluno no editor de SQL, traduzimos os erros mais comuns de quem
+// está aprendendo, por código SQLSTATE. O que não está no mapa cai num texto genérico
+// em português (nunca a mensagem crua em inglês).
+const TRADUCOES_POR_CODIGO: Record<string, (erro: ErroPostgres) => string> = {
+  '42601': (erro) => {
+    const [proximo] = extrairIdentificadores(erro.message);
+    return `Erro de sintaxe na consulta${proximo ? ` perto de "${proximo}"` : ''}.`;
+  },
+  '42P01': (erro) => `A tabela ${quotar(extrairIdentificadores(erro.message)[0])} não existe.`,
+  '42703': (erro) => `A coluna ${quotar(erro.column ?? extrairIdentificadores(erro.message)[0])} não existe.`,
+  '42702': (erro) => `A coluna ${quotar(extrairIdentificadores(erro.message)[0])} é ambígua — especifique de qual tabela ela vem.`,
+  '42883': (erro) => `A função ${quotar(extrairIdentificadores(erro.message)[0])} não existe (confira o nome e os tipos dos argumentos).`,
+  '42P07': (erro) => `A tabela ${quotar(extrairIdentificadores(erro.message)[0])} já existe.`,
+  '42710': (erro) => `${quotar(extrairIdentificadores(erro.message)[0])} já existe.`,
+  '23505': (erro) =>
+    `Valor duplicado: já existe um registro com esse valor${erro.constraint ? ` (restrição "${erro.constraint}")` : ''}.`,
+  '23503': (erro) =>
+    `Essa operação viola uma chave estrangeira${erro.table ? ` na tabela "${erro.table}"` : ''} — verifique se o registro relacionado existe.`,
+  '23502': (erro) => `A coluna ${quotar(erro.column)} não pode receber valor nulo.`,
+  '23514': (erro) =>
+    `O valor informado viola a restrição de verificação (CHECK)${erro.constraint ? ` "${erro.constraint}"` : ''}.`,
+  '22012': () => 'Divisão por zero.',
+  '22P02': (erro) => {
+    const valor = extrairIdentificadores(erro.message).at(-1);
+    return `Valor inválido para o tipo esperado${valor ? `: "${valor}"` : ''}.`;
+  },
+  '22003': () => 'Valor numérico fora do intervalo permitido para o tipo da coluna.',
+  '42501': () => 'Privilégio insuficiente para executar essa operação.',
+  '25P02': () => 'A transação atual falhou — a consulta anterior teve erro e precisa ser refeita desde o início.',
+};
+
+function traduzirMensagem(error: unknown, codigo: string | undefined): string {
+  if (!(error instanceof Error)) {
+    return 'Erro ao executar a consulta.';
+  }
+  const tradutor = codigo ? TRADUCOES_POR_CODIGO[codigo] : undefined;
+  if (tradutor) {
+    return tradutor(error);
+  }
+  return codigo ? `Erro ao executar a consulta (código ${codigo}).` : 'Erro ao executar a consulta.';
+}
+
+export function classificarErro(error: unknown): SandboxExecucaoErro {
   const codigo = error && typeof error === 'object' && 'code' in error ? String(error.code) : undefined;
-  const message = error instanceof Error ? error.message : 'Erro ao executar a consulta';
   const status = codigo?.startsWith(CODIGO_ERRO_SINTAXE_PREFIXO) ? 'erro_sintaxe' : 'erro_execucao';
-  return { status, message };
+  return { status, message: traduzirMensagem(error, codigo) };
 }
 
 export interface SandboxExecutionRepository {
