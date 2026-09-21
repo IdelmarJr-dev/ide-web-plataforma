@@ -12,7 +12,19 @@ export const CartaoResumo = ({ rotulo, valor, destaque = false }: CartaoResumoPr
       destaque && valor > 0 ? 'border-primary-500 bg-primary-50' : 'border-neutral-300 bg-surface'
     }`}
   >
-    <span className="block text-2xl font-semibold text-neutral-900">{valor}</span>
-    <span className="mt-1 block text-xs text-neutral-600">{rotulo}</span>
+    <span
+      className={`block font-mono text-[10.5px] font-semibold uppercase tracking-wide ${
+        destaque && valor > 0 ? 'text-primary-700' : 'text-neutral-600'
+      }`}
+    >
+      {rotulo}
+    </span>
+    <span
+      className={`mt-1 block font-mono text-2xl font-bold ${
+        destaque && valor > 0 ? 'text-primary-700' : 'text-neutral-900'
+      }`}
+    >
+      {valor}
+    </span>
   </div>
 )

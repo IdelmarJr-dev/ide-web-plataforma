@@ -21,7 +21,10 @@ test('aluno sem turma nenhuma chega ao estudo livre pelo painel', async ({ page 
 
   await expect(page.getByText(/você ainda não está em nenhuma turma/i)).toBeVisible()
 
-  await page.getByRole('link', { name: /estudar sozinho/i }).click()
+  // Link específico do card do painel — a barra de navegação do topo também tem um,
+  // então "estudar sozinho" sozinho é ambíguo (strict mode do Playwright).
+  const cardEstudoLivre = page.locator('section', { hasText: 'Seu próprio banco pra praticar SQL' })
+  await cardEstudoLivre.getByRole('link', { name: /estudar sozinho/i }).click()
 
   await expect(page.getByRole('heading', { name: 'Estudar sozinho' })).toBeVisible()
   await expect(page.getByRole('tab', { name: 'Meu banco' })).toBeVisible()
