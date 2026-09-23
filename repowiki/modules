@@ -1,0 +1,7 @@
+# Module Documentation Directory
+
+This directory contains comprehensive documentation for each module in the IDE Web system.
+
+## Available Modules
+
+- [backend_painel](backend_painel.md) - Dashboard and analytics aggregation layer

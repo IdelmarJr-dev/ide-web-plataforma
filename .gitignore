@@ -1,5 +1,12 @@
 .env
 /docs/
-/repowiki/
 .claude
 /CLAUDE.md
+
+# CodeWiki: artefatos intermediários e módulos de pesquisa (sorteio de grupo,
+# TCLE, SUS/RTLX) não devem ir pro repositório público durante a coleta de
+# dados do TCC — ver docs/decisions/fase6-alinhamento-tcc.md
+/repowiki/temp/
+/repowiki/*module_tree.json
+/repowiki/backend_pesquisa.md
+/repowiki/frontend_pesquisa.md
