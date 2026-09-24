@@ -103,8 +103,34 @@ erDiagram
 ### Key Constraints
 
 - **Unique constraint**: `MatriculaTurma(aluno_id, turma_id)` — one enrollment record per student per turma
-- **Turma code**: 6-character uppercase alphanumeric string, globally unique across all turmas
+- **Turma code**: 6 characters from a 32-character alphabet, globally unique across all turmas
 - **Encerramento**: `encerrada_em IS NOT NULL` freezes the turma (read-only, no new enrollments)
+- **Optional `turno` and `sala`**: only feed the professor dashboard filter; a turma without them is still valid
+
+---
+
+## Endpoints
+
+All routes sit under `/api/v1`, are wired by hand in `turma.routes.ts` and require `requireAuth`. Ownership ("you are the professor of this turma") is checked in `TurmaService`, not in the route.
+
+| Method and path | Roles | Controller method | Purpose |
+|---|---|---|---|
+| `POST /turmas` | professor, pesquisador | `criar` | Create a turma; body validated by `criarTurmaBodySchema` (`nome`, `semestre` required; `disciplina`, `turno`, `sala` optional). Answers `201` |
+| `GET /turmas/minhas` | any authenticated | `minhas` | Turmas visible to the caller (see below) |
+| `GET /turmas/:id/alunos` | professor, pesquisador | `listarAlunos` | Students enrolled, sorted by name |
+| `POST /turmas/:codigo/matricular` | aluno | `matricular` | Enroll the logged-in student using the turma code. Answers `201` |
+| `POST /turmas/:id/encerrar` | professor, pesquisador | `encerrar` | Freeze the turma (idempotent) |
+| `POST /turmas/:id/reabrir` | professor, pesquisador | `reabrir` | Undo a closure made by mistake |
+
+`GET /turmas/minhas` depends on the role:
+
+| Role | Result |
+|---|---|
+| `professor` | turmas they created, newest first |
+| `pesquisador` | **all** turmas, because the researcher must choose in which one to start the research |
+| `aluno` | turmas they are enrolled in, resolved through `MatriculaTurma` |
+
+`matricular` fails with `NotFoundError('Turma')` for an unknown code, and with `ConflictError` when the turma is closed or the student is already enrolled.
 
 ---
 
@@ -113,13 +139,14 @@ erDiagram
 ### 1. Turma Creation
 
 **Endpoint**: `POST /api/v1/turmas`  
-**Role**: `professor`
+**Roles**: `professor`, `pesquisador`
 
 **Code Generation Algorithm**:
 - Uses `gerarCodigoTurma()` from `utils/codigoTurma.ts`
-- 6 uppercase alphanumeric characters
-- Maximum 5 collision retry attempts
-- Throws error if all attempts fail (extremely unlikely with 36^6 = 2.1 billion combinations)
+- 6 characters from `ABCDEFGHJKLMNPQRSTUVWXYZ23456789`: the letters `I` and `O` and the digits `0` and `1` are left out because they are easy to confuse when typed from a board or a printout
+- Maximum 5 collision retry attempts (`TurmaService.gerarCodigoUnico`), checking `findByCodigo` each time
+- Throws a plain error if all attempts fail, which is extremely unlikely with 32^6 ≈ 1.07 billion combinations
+- The code is an enrollment token and no longer a credential (Fase 8), so it is generated with `Math.random` and not with a cryptographic source
 
 ### 2. Student Enrollment (Matricular)
 

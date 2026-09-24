@@ -8,7 +8,10 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      # postgres:18 mudou o PGDATA padrão para /var/lib/postgresql/18/docker; o mount
+      # tem de ser no pai (/var/lib/postgresql), senão os dados vão pra um volume
+      # anônimo e somem ao recriar o container.
+      - db_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ide_app -d ide_web"]
       interval: 5s
@@ -39,6 +42,19 @@ services:
       timeout: 5s
       retries: 10
 
+  # Aplica as migrations do Prisma e sai. Usa o estágio `build` do Dockerfile porque o
+  # CLI do Prisma é devDependency e não existe na imagem de runtime.
+  migrate:
+    build:
+      context: ./ide-web-backend
+      target: build
+    command: ["npx", "prisma", "migrate", "deploy"]
+    environment:
+      DATABASE_URL: postgresql://ide_app:${DB_PASSWORD}@db:5432/ide_web?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+
   backend:
     build:
       context: ./ide-web-backend
@@ -59,8 +75,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      db:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
       db_sandbox:
         condition: service_healthy
 

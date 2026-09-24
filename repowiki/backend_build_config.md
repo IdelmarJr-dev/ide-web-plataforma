@@ -605,7 +605,7 @@ graph TB
 graph TB
     subgraph "Runtime Dependencies"
         EXPRESS[express<br/>Web Server]
-        PRISMA_CLIENT[@prisma/client<br/>ORM]
+        PRISMA_CLIENT["@prisma/client<br/>ORM"]
         PG[pg<br/>Raw SQL]
         JWT[jsonwebtoken<br/>Auth]
         ZOD[zod<br/>Validation]
@@ -820,4 +820,4 @@ docker run --rm test-backend node --version  # Should be v20.x
 
 **Module**: `backend_build_config`  
 **Last Updated**: 2026-09-21  
-**Related Decision**: [Fase 1 - Setup Técnico](../decisions/fase1-setup-tecnico.md)
+**Related Decision**: [Fase 1 - Setup Técnico](../docs/decisions/fase1-setup-tecnico.md)

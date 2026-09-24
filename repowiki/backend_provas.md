@@ -504,9 +504,9 @@ Key areas to test:
 
 ## Related Decisions
 
-- **Fase 5**: Initial exam sorter implementation - [docs/decisions/fase5-sorteador-provas.md](../../docs/decisions/fase5-sorteador-provas.md)
-- **Fase 8**: Moved variant assignment from Usuario to MatriculaTurma - [docs/decisions/fase8-conta-do-aluno-matricula-estudo-livre.md](../../docs/decisions/fase8-conta-do-aluno-matricula-estudo-livre.md)
-- **Fase 10**: Added exam assistant and deadline support - [docs/decisions/fase10-professor-prova-sessao.md](../../docs/decisions/fase10-professor-prova-sessao.md)
+- **Fase 5**: Initial exam sorter implementation - [docs/decisions/fase5-sorteador-provas.md](../docs/decisions/fase5-sorteador-provas.md)
+- **Fase 8**: Moved variant assignment from Usuario to MatriculaTurma - [docs/decisions/fase8-conta-do-aluno-matricula-estudo-livre.md](../docs/decisions/fase8-conta-do-aluno-matricula-estudo-livre.md)
+- **Fase 10**: Added exam assistant and deadline support - [docs/decisions/fase10-professor-prova-sessao.md](../docs/decisions/fase10-professor-prova-sessao.md)
 
 ---
 

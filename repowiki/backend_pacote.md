@@ -601,7 +601,7 @@ function gerarSql(modelo: ModeloLogico): string
 
 ### Phase 8 Changes (September 2026)
 
-**Decision:** [fase8-conta-do-aluno-matricula-estudo-livre.md](../decisions/fase8-conta-do-aluno-matricula-estudo-livre.md)
+**Decision:** [fase8-conta-do-aluno-matricula-estudo-livre.md](../docs/decisions/fase8-conta-do-aluno-matricula-estudo-livre.md)
 
 **Key Changes:**
 1. **Separation of Download and Finalization:**

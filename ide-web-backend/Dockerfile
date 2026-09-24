@@ -4,10 +4,13 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
+# O tsconfig.json precisa estar presente no `prisma generate`: o Prisma infere dele a
+# extensão dos imports do client gerado (sem ele gera `./x.ts`, que quebra em runtime).
+COPY tsconfig.json ./
 COPY prisma ./prisma
+COPY prisma.config.ts ./
 RUN npx prisma generate
 
-COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build
 

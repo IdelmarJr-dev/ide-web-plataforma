@@ -269,14 +269,14 @@ import { exercicioService } from '~features/exercicio/services/exercicioService'
 flowchart TD
     A[Component Test] --> B[Vitest Runner]
     B --> C[jsdom Environment]
-    C --> D[@testing-library/react]
+    C --> D["@testing-library/react"]
     D --> E[Render Component]
     E --> F{Assertions}
     F -->|Pass| G[✓ Green]
     F -->|Fail| H[✗ Red]
     
     I[tests/setup.ts] --> C
-    I --> J[@testing-library/jest-dom<br/>Custom matchers]
+    I --> J["@testing-library/jest-dom<br/>Custom matchers"]
     
     style C fill:#ffe1e1
     style D fill:#e1ffe1

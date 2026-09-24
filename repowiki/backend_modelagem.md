@@ -334,7 +334,7 @@ flowchart TD
     Inline --> Next{More tables?}
     Defer --> Next
     Next -->|Yes| Generate
-    Next -->|No| Output([SqlGerado<br/>{sql, avisos, tabelas}])
+    Next -->|No| Output(["SqlGerado<br/>{sql, avisos, tabelas}"])
     
     style Start fill:#e3f2fd
     style Output fill:#c8e6c9
@@ -938,9 +938,9 @@ A tabela "endereco" não tem chave primária.
 ## Decision Records
 
 **Related Decisions**:
-- [Fase 6: Alinhamento com TCC](../decisions/fase6-alinhamento-tcc.md) - Editor MER real, MER→SQL, documento v2
-- [Fase 7: Modelagem Conceitual Chen + Lógica](../decisions/fase7-modelagem-conceitual-logica.md) - Conceptual editor, conversion assistant, specialization, composite/multivalued attributes
-- [Fase 8: Conta do Aluno + Matrícula](../decisions/fase8-conta-do-aluno-matricula-estudo-livre.md) - Public exercises, enrollment model
+- [Fase 6: Alinhamento com TCC](../docs/decisions/fase6-alinhamento-tcc.md) - Editor MER real, MER→SQL, documento v2
+- [Fase 7: Modelagem Conceitual Chen + Lógica](../docs/decisions/fase7-modelagem-conceitual-logica.md) - Conceptual editor, conversion assistant, specialization, composite/multivalued attributes
+- [Fase 8: Conta do Aluno + Matrícula](../docs/decisions/fase8-conta-do-aluno-matricula-estudo-livre.md) - Public exercises, enrollment model
 
 ---
 

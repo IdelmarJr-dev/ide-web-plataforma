@@ -258,7 +258,7 @@ graph TD
     G -->|Yes| H[Extract statusCode, code, message]
     G -->|No| I[500 Internal Server Error]
     
-    H --> J[Format JSON Response<br/>{error, code, details?}]
+    H --> J["Format JSON Response<br/>{error, code, details?}"]
     I --> K[Log Stack + Generic Response]
     
     J --> L[HTTP Response to Client]
