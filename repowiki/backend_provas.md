@@ -176,7 +176,7 @@ flowchart TD
     style RandomChoice fill:#fff9c4
 ```
 
-**Key Design Decision:** The variant is stored in `MatriculaTurma.prova_id`, not `Usuario.prova_id`, because a student can be enrolled in multiple classes simultaneously and may need different variants in each (Fase 8). See [Backend Turmas](backend_turmas.md#matriculation-system) for details.
+**Key Design Decision:** The variant is stored in `MatriculaTurma.prova_id`, not `Usuario.prova_id`, because a student can be enrolled in multiple classes simultaneously and may need different variants in each (Fase 8). See [Backend Turmas](backend_turmas.md#2-student-enrollment-matricular) for details.
 
 ##### 3. Exercise Catalog (`acervoDisponivel`)
 
@@ -456,7 +456,7 @@ The module uses custom error classes from [Backend Errors](backend_errors.md):
 - **Exercicio.prova_id = UUID**: Exercise visible only to students assigned that specific variant
 - **One Exam Per Exercise**: Each exercise can belong to at most one exam variant (enforced by `findSemProva`)
 
-See [Backend Exercicios - Access Control](backend_exercicios.md#access-control) for full visibility rules.
+See [Backend Exercicios - Access Control](backend_exercicios.md#acessoexercicioservice) for full visibility rules.
 
 ### Exam Assistant
 

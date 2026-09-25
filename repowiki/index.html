@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -920,7 +920,7 @@
                     <img class="logo-mark" src="codewiki-icon.png" alt="CodeWiki">
                     <span class="logo-title">IDE-Web-TCC</span>
                 </div>
-                <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
+                <span class="sidebar-botoes" style="display:flex;gap:6px;align-items:center;"><button class="theme-toggle" id="lang-toggle" type="button" aria-label="Ler em português" style="font-size:12px;font-weight:600;">PT</button><button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button></span>
             </div>
             <a href="https://github.com/IdelmarJr-dev/ide-web-plataforma" class="repo-link" target="_blank">🔗 View Repository</a>
 
@@ -1648,6 +1648,84 @@
 };
         const METADATA = null;
         const DOCS_BASE_PATH = '';
+/* wiki-idiomas */
+        const I18N = {
+            en: {
+                docLang: 'en', toggleLabel: 'PT', toggleTitle: 'Ler em português',
+                menu: 'Toggle navigation', theme: 'Toggle dark mode', repo: '🔗 View Repository',
+                info: 'Generation Info', filter: 'Filter pages…', filterAria: 'Filter pages',
+                overview: 'Overview', overviewNav: '📄 Overview', loading: 'Loading documentation...',
+                pagerAria: 'Previous and next page', tocAria: 'Table of contents', toc: 'On this page',
+                prev: '← Previous', next: 'Next →', copy: 'Copy', copied: 'Copied!',
+                section: 'Toggle section', errorTitle: '⚠️ Error', failed: 'Failed to load document: ',
+                fallback: '', zoomOut: 'Zoom out', zoomIn: 'Zoom in', reset: 'Reset view', fit: 'Fit', close: 'Close (Esc)'
+            },
+            pt: {
+                docLang: 'pt-BR', toggleLabel: 'EN', toggleTitle: 'Read in English',
+                menu: 'Alternar navegação', theme: 'Alternar modo escuro', repo: '🔗 Ver repositório',
+                info: 'Informações da geração', filter: 'Filtrar páginas…', filterAria: 'Filtrar páginas',
+                overview: 'Visão geral', overviewNav: '📄 Visão geral', loading: 'Carregando documentação...',
+                pagerAria: 'Página anterior e próxima', tocAria: 'Índice da página', toc: 'Nesta página',
+                prev: '← Anterior', next: 'Próxima →', copy: 'Copiar', copied: 'Copiado!',
+                section: 'Alternar seção', errorTitle: '⚠️ Erro', failed: 'Não foi possível carregar o documento: ',
+                fallback: '> **Esta página ainda não foi traduzida para o português.** Exibindo a versão em inglês.\n\n',
+                zoomOut: 'Diminuir', zoomIn: 'Ampliar', reset: 'Reiniciar visão', fit: 'Ajustar', close: 'Fechar (Esc)'
+            }
+        };
+
+        function idiomaInicial() {
+            try {
+                const daUrl = new URLSearchParams(location.search).get('lang');
+                if (daUrl === 'pt' || daUrl === 'en') return daUrl;
+                const salvo = localStorage.getItem('codewiki-lang');
+                if (salvo === 'pt' || salvo === 'en') return salvo;
+            } catch (e) {
+                // Sem armazenamento (modo privado): segue pelo idioma do navegador
+            }
+            return (navigator.language || '').toLowerCase().indexOf('pt') === 0 ? 'pt' : 'en';
+        }
+
+        let LANG = idiomaInicial();
+        function t(chave) { return I18N[LANG][chave]; }
+
+        // Versão em português vive em pt/; a em inglês, na raiz. Mesmo nome de arquivo.
+        function caminhoDoc(filename, idioma) {
+            const base = DOCS_BASE_PATH ? DOCS_BASE_PATH + '/' + filename : filename;
+            return idioma === 'pt' ? 'pt-br/' + base : base;
+        }
+
+        function aplicarIdioma() {
+            document.documentElement.lang = t('docLang');
+            const texto = (id, valor) => { const el = document.getElementById(id); if (el) el.textContent = valor; };
+            const attr = (id, nome, valor) => { const el = document.getElementById(id); if (el) el.setAttribute(nome, valor); };
+            attr('menu-toggle', 'aria-label', t('menu'));
+            attr('theme-toggle', 'aria-label', t('theme'));
+            attr('nav-filter', 'placeholder', t('filter'));
+            attr('nav-filter', 'aria-label', t('filterAria'));
+            attr('pager', 'aria-label', t('pagerAria'));
+            attr('toc', 'aria-label', t('tocAria'));
+            texto('lang-toggle', t('toggleLabel'));
+            attr('lang-toggle', 'title', t('toggleTitle'));
+            attr('lang-toggle', 'aria-label', t('toggleTitle'));
+            const repo = document.querySelector('.repo-link'); if (repo) repo.textContent = t('repo');
+            const info = document.querySelector('#repo-info h4'); if (info) info.textContent = t('info');
+            const inicio = document.querySelector('.nav-section .nav-item[data-file="overview.md"]');
+            if (inicio) inicio.textContent = t('overviewNav');
+            const carregando = document.querySelector('#loading p'); if (carregando) carregando.textContent = t('loading');
+            document.querySelectorAll('.nav-toggle').forEach(el => el.setAttribute('aria-label', t('section')));
+        }
+
+        function setupLangToggle() {
+            document.getElementById('lang-toggle').addEventListener('click', function() {
+                LANG = LANG === 'pt' ? 'en' : 'pt';
+                try { localStorage.setItem('codewiki-lang', LANG); } catch (e) { /* não persiste */ }
+                aplicarIdioma();
+                const rota = parseHash();
+                currentFile = null;
+                loadDocument(rota.file, rota.anchor);
+            });
+        }
+
 
         // Router / rendering state
         let currentFile = null;
@@ -1703,6 +1781,8 @@
 
             setupNavFilter();
             setupThemeToggle();
+            setupLangToggle();
+            aplicarIdioma();
             setupMobileDrawer();
             setupLinkInterception();
             initMermaid();
@@ -1835,7 +1915,7 @@
             const collapsed = depth >= 1 ? ' collapsed' : '';
             return '<div class="nav-group' + collapsed + '">' +
                 '<div class="nav-row">' + inner +
-                '<button class="nav-toggle" type="button" aria-label="Toggle section">▸</button></div>' +
+                '<button class="nav-toggle" type="button" aria-label="' + t('section') + '">▸</button></div>' +
                 '<div class="nav-children">' + childrenHtml + '</div></div>';
         }
 
@@ -1906,13 +1986,17 @@
             content.style.display = 'none';
 
             try {
-                const docPath = DOCS_BASE_PATH ? DOCS_BASE_PATH + '/' + filename : filename;
-                const response = await fetch(docPath);
+                let response = await fetch(caminhoDoc(filename, LANG));
+                let semTraducao = false;
+                if (!response.ok && LANG === 'pt') {
+                    response = await fetch(caminhoDoc(filename, 'en'));
+                    semTraducao = response.ok;
+                }
                 if (!response.ok) {
                     throw new Error('Failed to load ' + filename);
                 }
 
-                const markdown = await response.text();
+                const markdown = (semTraducao ? t('fallback') : '') + await response.text();
                 if (token !== loadToken) return; // superseded by a newer navigation
 
                 content.innerHTML = renderMarkdown(markdown);
@@ -1939,7 +2023,7 @@
             } catch (error) {
                 console.error('Error loading document:', error);
                 if (token === loadToken) {
-                    showError('Failed to load document: ' + filename);
+                    showError(t('failed') + filename);
                 }
             }
         }
@@ -2038,15 +2122,15 @@
                 const btn = document.createElement('button');
                 btn.className = 'copy-btn';
                 btn.type = 'button';
-                btn.textContent = 'Copy';
+                btn.textContent = t('copy');
                 btn.addEventListener('click', function() {
                     const code = pre.querySelector('code');
                     const text = code ? code.innerText : pre.innerText;
                     navigator.clipboard.writeText(text).then(() => {
-                        btn.textContent = 'Copied!';
+                        btn.textContent = t('copied');
                         btn.classList.add('copied');
                         setTimeout(() => {
-                            btn.textContent = 'Copy';
+                            btn.textContent = t('copy');
                             btn.classList.remove('copied');
                         }, 1500);
                     });
@@ -2111,10 +2195,10 @@
             lightboxEl.innerHTML =
                 '<div class="lightbox-canvas"><div class="lightbox-stage"></div></div>' +
                 '<div class="lightbox-toolbar">' +
-                '<button type="button" data-action="zoom-out" title="Zoom out" aria-label="Zoom out">−</button>' +
-                '<button type="button" data-action="zoom-in" title="Zoom in" aria-label="Zoom in">+</button>' +
-                '<button type="button" data-action="reset" title="Reset view" aria-label="Reset view">Fit</button>' +
-                '<button type="button" data-action="close" title="Close (Esc)" aria-label="Close">✕</button>' +
+                '<button type="button" data-action="zoom-out" title="' + t('zoomOut') + '" aria-label="' + t('zoomOut') + '">−</button>' +
+                '<button type="button" data-action="zoom-in" title="' + t('zoomIn') + '" aria-label="' + t('zoomIn') + '">+</button>' +
+                '<button type="button" data-action="reset" title="' + t('reset') + '" aria-label="' + t('reset') + '">' + t('fit') + '</button>' +
+                '<button type="button" data-action="close" title="' + t('close') + '" aria-label="' + t('close') + '">✕</button>' +
                 '</div>' +
                 '<div class="lightbox-hint">Scroll to zoom · drag to pan · Esc to close</div>';
             document.body.appendChild(lightboxEl);
@@ -2288,7 +2372,7 @@
             }
 
             contentInner.classList.remove('no-toc');
-            let html = '<div class="toc-title">On this page</div>';
+            let html = '<div class="toc-title">' + t('toc') + '</div>';
             headings.forEach(h => {
                 html += '<a class="toc-link toc-' + h.tagName.toLowerCase() + '" href="#' +
                     escapeHtml(h.id) + '">' + escapeHtml(h.textContent) + '</a>';
@@ -2341,7 +2425,7 @@
 
         function pageTitleFor(filename) {
             const base = filename.replace(/\.md$/i, '');
-            return base === 'overview' ? 'Overview' : formatNavTitle(base);
+            return base === 'overview' ? t('overview') : formatNavTitle(base);
         }
 
         function renderPagerLinks(filename) {
@@ -2359,12 +2443,12 @@
             let html = '';
             if (prev) {
                 html += '<a class="pager-link pager-prev" href="' + buildHash(prev) + '">' +
-                    '<span class="pager-label">← Previous</span>' +
+                    '<span class="pager-label">' + t('prev') + '</span>' +
                     '<span class="pager-title">' + escapeHtml(pageTitleFor(prev)) + '</span></a>';
             }
             if (next) {
                 html += '<a class="pager-link pager-next" href="' + buildHash(next) + '">' +
-                    '<span class="pager-label">Next →</span>' +
+                    '<span class="pager-label">' + t('next') + '</span>' +
                     '<span class="pager-title">' + escapeHtml(pageTitleFor(next)) + '</span></a>';
             }
             pager.innerHTML = html;
@@ -2440,7 +2524,7 @@
 
             loading.style.display = 'none';
             content.style.display = 'block';
-            content.innerHTML = '<div class="error"><h3>⚠️ Error</h3><p>' +
+            content.innerHTML = '<div class="error"><h3>' + t('errorTitle') + '</h3><p>' +
                 escapeHtml(message) + '</p></div>';
             document.getElementById('pager').innerHTML = '';
             document.getElementById('toc').innerHTML = '';

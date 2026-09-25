@@ -161,7 +161,7 @@ abstract class BaseController {
 
 #### Design Principles
 
-1. **Uniform Response Shape**: All successful responses follow the `{ data: T }` envelope pattern (see [ApiEnvelope](frontend_shared.md#http-client))
+1. **Uniform Response Shape**: All successful responses follow the `{ data: T }` envelope pattern (see [ApiEnvelope](frontend_shared.md#http-client-libhttpclientts))
 2. **Protected Access**: `handleSuccess` is `protected`, ensuring it's only used by controller subclasses
 3. **Default Status Code**: Returns HTTP 200 by default, overridable for 201 (Created), 202 (Accepted), etc.
 4. **Type Safety**: Accepts `unknown` data type, letting TypeScript infer from DTOs
