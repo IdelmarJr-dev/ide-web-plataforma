@@ -15,10 +15,6 @@ export function createApp(): Express {
   app.use(express.json());
   app.use(cookieParser());
 
-  app.get('/.well-known/strix-verify.txt', (_req, res) => {
-    res.type('text/plain').send('strix-verify-ef5d865c263a477a6538a23ed2b24bab');
-  });
-
   app.use(API_PREFIX, routes);
 
   app.use(notFoundHandler);
