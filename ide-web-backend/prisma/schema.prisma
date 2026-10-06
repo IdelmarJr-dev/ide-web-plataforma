@@ -48,6 +48,17 @@ enum ModoMer {
   conceitual_logico
 }
 
+// Ambiente sorteado pro aluno na pesquisa do TCC — ver docs/decisions/fase13-pesquisa-dados-no-node.md.
+enum Ambiente {
+  ide_web
+  ferramentas_tradicionais
+}
+
+enum Grupo {
+  controle
+  experimental
+}
+
 model Usuario {
   id         String   @id @default(uuid()) @db.Uuid
   nome       String
@@ -67,6 +78,10 @@ model Usuario {
   respostas_dissertativas RespostaDissertativa[]
   resultados_exercicio    ResultadoExercicio[]
   dicas_ia                DicaIa[]
+  pesquisas_iniciadas     Pesquisa[]
+  tcle_consentimentos     TcleConsentimento[]
+  alocacoes_grupo         AlocacaoGrupo[]
+  sessoes_uso             SessaoUso[]
 
   @@map("usuarios")
 }
@@ -91,6 +106,7 @@ model Turma {
   matriculas MatriculaTurma[]
   exercicios Exercicio[]
   provas     Prova[]
+  pesquisas  Pesquisa[]
 
   @@map("turmas")
 }
@@ -260,10 +276,109 @@ model DicaIa {
   @@map("dicas_ia")
 }
 
-// SessaoUso, RespostaSus, RespostaRtlx, TcleConsentimento migraram pro backend
-// Python self-hosted (dado de sujeito de pesquisa) — ver
-// docs/decisions/fase4-pesquisa-python-sessao-aluno-login.md e a restrição
-// não-negociável no CLAUDE.md. Não recriar essas tabelas aqui.
+// Dado de sujeito de pesquisa do TCC (TCLE, grupo sorteado, sessão de uso, SUS/RTLX).
+// Morou num backend Python self-hosted até a Fase 12 (ver
+// docs/decisions/fase4-pesquisa-python-sessao-aluno-login.md); voltou pra cá na
+// Fase 13 porque expor aquele self-hosted via HTTPS no dia da coleta (rede doméstica
+// do autor, provável CGNAT) não era viável — ver
+// docs/decisions/fase13-pesquisa-dados-no-node.md. Anonimizado do mesmo jeito que
+// antes: sem nome/e-mail nestes registros, só `usuario_id` opaco pra quem lê.
+model Pesquisa {
+  id                  String    @id @default(uuid()) @db.Uuid
+  turma_id            String    @db.Uuid
+  // Exercícios que compõem a tarefa — os mesmos pros dois grupos (TCC, seção 5.2).
+  exercicio_ids       String[]
+  iniciada_por        String    @db.Uuid
+  iniciada_em         DateTime  @default(now())
+  grupos_sorteados_em DateTime?
+  encerrada_em        DateTime?
+
+  turma               Turma               @relation(fields: [turma_id], references: [id])
+  iniciador           Usuario             @relation(fields: [iniciada_por], references: [id])
+  tcle_consentimentos TcleConsentimento[]
+  alocacoes_grupo     AlocacaoGrupo[]
+  sessoes_uso         SessaoUso[]
+
+  // "No máximo uma pesquisa ativa (não encerrada) por turma" é um índice único
+  // parcial (`WHERE encerrada_em IS NULL`) — Prisma não expressa isso no schema, foi
+  // adicionado à mão na migration.sql. O service também confere antes de criar
+  // (find-then-create), igual ao padrão já usado em TurmaService.matricular.
+  @@map("pesquisas")
+}
+
+model TcleConsentimento {
+  id            String   @id @default(uuid()) @db.Uuid
+  pesquisa_id   String   @db.Uuid
+  usuario_id    String   @db.Uuid
+  aceito        Boolean
+  versao_termo  String
+  // Atualizado a cada resposta — ordena os participantes na exportação (P01, P02…).
+  respondido_em DateTime @default(now())
+
+  pesquisa Pesquisa @relation(fields: [pesquisa_id], references: [id])
+  usuario  Usuario  @relation(fields: [usuario_id], references: [id])
+
+  @@unique([pesquisa_id, usuario_id])
+  @@map("tcle_consentimentos")
+}
+
+model AlocacaoGrupo {
+  id          String   @id @default(uuid()) @db.Uuid
+  pesquisa_id String   @db.Uuid
+  usuario_id  String   @db.Uuid
+  grupo       Grupo
+  alocado_em  DateTime @default(now())
+
+  pesquisa Pesquisa @relation(fields: [pesquisa_id], references: [id])
+  usuario  Usuario  @relation(fields: [usuario_id], references: [id])
+
+  @@unique([pesquisa_id, usuario_id])
+  @@map("alocacoes_grupo")
+}
+
+model SessaoUso {
+  id            String    @id @default(uuid()) @db.Uuid
+  pesquisa_id   String    @db.Uuid
+  usuario_id    String    @db.Uuid
+  // Definido pelo servidor a partir da alocação — nunca vem do cliente.
+  ambiente      Ambiente
+  iniciada_em   DateTime  @default(now())
+  finalizada_em DateTime?
+
+  pesquisa      Pesquisa      @relation(fields: [pesquisa_id], references: [id])
+  usuario       Usuario       @relation(fields: [usuario_id], references: [id])
+  resposta_sus  RespostaSus?
+  resposta_rtlx RespostaRtlx?
+
+  @@unique([pesquisa_id, usuario_id])
+  @@map("sessoes_uso")
+}
+
+model RespostaSus {
+  id            String   @id @default(uuid()) @db.Uuid
+  sessao_id     String   @unique @db.Uuid
+  usuario_id    String   @db.Uuid
+  itens         Json
+  pontuacao_sus Decimal  @db.Decimal(5, 2)
+  criado_em     DateTime @default(now())
+
+  sessao SessaoUso @relation(fields: [sessao_id], references: [id])
+
+  @@map("respostas_sus")
+}
+
+model RespostaRtlx {
+  id             String   @id @default(uuid()) @db.Uuid
+  sessao_id      String   @unique @db.Uuid
+  usuario_id     String   @db.Uuid
+  dimensoes      Json
+  pontuacao_rtlx Decimal  @db.Decimal(5, 2)
+  criado_em      DateTime @default(now())
+
+  sessao SessaoUso @relation(fields: [sessao_id], references: [id])
+
+  @@map("respostas_rtlx")
+}
 
 /**
  * Sessão de login com estado no servidor. Existe porque o logout precisa revogar de

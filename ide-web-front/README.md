@@ -68,7 +68,6 @@ A aplicação sobe em `http://localhost:5173`. Requer o backend rodando em `http
 | Variável                  | Descrição                                                         | Padrão                          |
 | --------------------------- | -------------------------------------------------------------------- | ---------------------------------- |
 | `VITE_API_URL`               | URL base da API (backend Node) consumida pelo app                    | `http://localhost:3000/api/v1`        |
-| `VITE_RESEARCH_API_URL`      | URL base do backend Python de pesquisa (self-hosted, o front fala direto com ele) | `http://localhost:8001`   |
 
 ## Nota sobre o bundle do Monaco Editor
 

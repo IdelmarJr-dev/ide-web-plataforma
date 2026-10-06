@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 
 // Versão 2.0 do termo — mesmo conteúdo do Apêndice A do TCC (tcc/latex_tcc/textual/apendice-a.tex)
-// e da constante TCLE_VERSAO_ATUAL do backend de pesquisa. Mudou o texto? Mude os três.
+// e da constante TCLE_VERSAO_ATUAL em ide-web-backend/src/dtos/pesquisaAplicada.dto.ts.
+// Mudou o texto? Mude os três.
 // O contato do Comitê de Ética em Pesquisa (CEP) só existe depois da submissão — ele fica
 // marcado abaixo até ser preenchido, e a coleta real não deve começar antes disso.
 export const CONTATO_PESQUISADOR = 'capic.2024218tads0009@aluno.ifpi.edu.br'

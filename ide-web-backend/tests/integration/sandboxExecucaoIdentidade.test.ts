@@ -98,12 +98,15 @@ describe('identidade de execução do sandbox SQL (Fase 12, D13/D14)', () => {
 
       // Antes da Fase 12, uma role sandbox_exec global e compartilhada teria privilégio
       // real sobre os dois schemas simultaneamente — isso precisa falhar por permissão.
-      // "permission denied for schema" é SQLSTATE 42501, mesma classe "42" que
-      // classificarErro trata como erro_sintaxe (ver nota acima) — o que importa aqui
-      // não é o rótulo, é que a consulta NÃO teve sucesso.
+      // O Postgres recusa com SQLSTATE 42501 (insufficient_privilege), mesma classe "42"
+      // que classificarErro trata como erro_sintaxe (ver nota acima); `classificarErro`
+      // sempre traduz 42501 pro texto fixo abaixo (SandboxExecutionRepository.ts,
+      // TRADUCOES_POR_CODIGO), então a mensagem nunca é a do Postgres cru (que varia
+      // com o idioma do servidor) — o que importa aqui não é o rótulo do status, é que a
+      // consulta NÃO teve sucesso e foi barrada por privilégio, não por outro motivo.
       expect(tentativa.status).not.toBe('sucesso');
       if (tentativa.status === 'sucesso') throw new Error('não deveria ter sucesso');
-      expect(tentativa.message.toLowerCase()).toContain('permission denied');
+      expect(tentativa.message.toLowerCase()).toContain('privilégio insuficiente');
     });
   });
 });

@@ -4,7 +4,7 @@ const HTTP_NOT_FOUND = 404;
 
 // Gênero do recurso, pra mensagem sair em português correto ("Turma não encontrada",
 // "Exercício não encontrado"). A mensagem chega ao usuário: a interface é toda em português.
-const FEMININOS = new Set(['Turma', 'Prova', 'Pesquisa', 'Submissão']);
+const FEMININOS = new Set(['Turma', 'Prova', 'Pesquisa', 'Submissão', 'Sessão']);
 
 export class NotFoundError extends AppError {
   readonly statusCode = HTTP_NOT_FOUND;

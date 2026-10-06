@@ -12,12 +12,6 @@ export const envSchema = z.object({
   JWT_SECRET: z.string().min(1),
   JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
-  // Segredo compartilhado só com o backend Python de pesquisa (self-hosted, fora do
-  // Render) — ver docs/decisions/fase4-pesquisa-python-sessao-aluno-login.md. Assina
-  // o token curto que o front usa como Bearer nas chamadas diretas ao Python; nunca é
-  // enviado ao navegador.
-  RESEARCH_JWT_SECRET: z.string().min(1),
-  RESEARCH_JWT_EXPIRES_IN: z.string().default('30m'),
   LLM_API_KEY: z.string().optional(),
   // Modelo Groq usado pra montar as dicas de IA (ver docs/decisions/fase3-dicas-ia.md).
   // Groq é o único provedor em escopo, por isso não há LLM_PROVIDER configurável ainda.

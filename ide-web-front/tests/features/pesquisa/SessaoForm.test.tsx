@@ -48,7 +48,7 @@ describe('SessaoForm', () => {
   it('mostra o ambiente sorteado e inicia a tarefa sem mandar ambiente pelo cliente', async () => {
     const chamadas = mockFetchPesquisa({
       [MINHA]: participacao({ grupo: 'controle', ambiente: 'ferramentas_tradicionais' }),
-      'POST /sessoes/iniciar': { id: 's1', ambiente: 'ferramentas_tradicionais', iniciadaEm: '2026-09-14T10:10:00Z', finalizadaEm: null },
+      'POST /pesquisa/sessoes/iniciar': { id: 's1', ambiente: 'ferramentas_tradicionais', iniciadaEm: '2026-09-14T10:10:00Z', finalizadaEm: null },
     })
 
     renderWithProviders(<SessaoForm />)
@@ -57,7 +57,7 @@ describe('SessaoForm', () => {
     await userEvent.setup().click(screen.getByRole('button', { name: /iniciar tarefa/i }))
 
     await waitFor(() => {
-      const inicio = chamadas.find((chamada) => chamada.caminho === '/sessoes/iniciar')
+      const inicio = chamadas.find((chamada) => chamada.caminho === '/pesquisa/sessoes/iniciar')
       expect(inicio).toBeDefined()
       expect(inicio?.corpo).toBeUndefined()
     })

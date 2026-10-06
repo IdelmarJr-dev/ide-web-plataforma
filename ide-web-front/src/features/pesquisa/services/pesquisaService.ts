@@ -1,4 +1,4 @@
-import { researchHttpClient } from './researchHttpClient'
+import { httpClient } from '../../../lib/httpClient'
 import type {
   Exportacao,
   MinhaParticipacao,
@@ -10,45 +10,44 @@ import type {
   TcleStatus,
 } from '../types'
 
-/** Chamadas ao backend Python de pesquisa (self-hosted) — ver docs/decisions/fase6-alinhamento-tcc.md. */
+/**
+ * Chamadas de pesquisa do TCC — dado de sujeito de pesquisa (TCLE/grupo/sessão/
+ * SUS/RTLX), anonimizado, mora no backend Node/Supabase desde a Fase 13. Ver
+ * docs/decisions/fase13-pesquisa-dados-no-node.md.
+ */
 export const pesquisaService = {
   // Aluno
-  minhaParticipacao: (): Promise<MinhaParticipacao> =>
-    researchHttpClient.get<MinhaParticipacao>('/pesquisa/minha-participacao'),
+  minhaParticipacao: (): Promise<MinhaParticipacao> => httpClient.get<MinhaParticipacao>('/pesquisa/minha-participacao'),
 
-  consentirTcle: (aceito: boolean): Promise<TcleStatus> =>
-    researchHttpClient.post<TcleStatus>('/tcle/consentir', { aceito }),
+  consentirTcle: (aceito: boolean): Promise<TcleStatus> => httpClient.post<TcleStatus>('/pesquisa/tcle/consentir', { aceito }),
 
-  iniciarSessao: (): Promise<Sessao> => researchHttpClient.post<Sessao>('/sessoes/iniciar'),
+  iniciarSessao: (): Promise<Sessao> => httpClient.post<Sessao>('/pesquisa/sessoes/iniciar'),
 
   finalizarSessao: (sessaoId: string): Promise<Sessao> =>
-    researchHttpClient.post<Sessao>(`/sessoes/${sessaoId}/finalizar`),
+    httpClient.post<Sessao>(`/pesquisa/sessoes/${sessaoId}/finalizar`),
 
   enviarSus: (sessaoId: string, itens: Record<string, number>, pontuacaoSus: number): Promise<void> =>
-    researchHttpClient.post(`/sessoes/${sessaoId}/sus`, { itens, pontuacaoSus }),
+    httpClient.post(`/pesquisa/sessoes/${sessaoId}/sus`, { itens, pontuacaoSus }),
 
   enviarRtlx: (sessaoId: string, dimensoes: Record<string, number>, pontuacaoRtlx: number): Promise<void> =>
-    researchHttpClient.post(`/sessoes/${sessaoId}/rtlx`, { dimensoes, pontuacaoRtlx }),
+    httpClient.post(`/pesquisa/sessoes/${sessaoId}/rtlx`, { dimensoes, pontuacaoRtlx }),
 
   // Qualquer papel
-  statusPesquisa: (turmaId: string): Promise<PesquisaStatus> =>
-    researchHttpClient.get<PesquisaStatus>(`/pesquisa/status/${turmaId}`),
+  statusPesquisa: (turmaId: string): Promise<PesquisaStatus> => httpClient.get<PesquisaStatus>(`/pesquisa/status/${turmaId}`),
 
   // Pesquisador
   iniciarPesquisa: (turmaId: string, exercicioIds: string[]): Promise<Pesquisa> =>
-    researchHttpClient.post<Pesquisa>('/pesquisa/iniciar', { turmaId, exercicioIds }),
+    httpClient.post<Pesquisa>('/pesquisa/iniciar', { turmaId, exercicioIds }),
 
-  historico: (turmaId: string): Promise<Pesquisa[]> =>
-    researchHttpClient.get<Pesquisa[]>(`/pesquisa/turma/${turmaId}/historico`),
+  historico: (turmaId: string): Promise<Pesquisa[]> => httpClient.get<Pesquisa[]>(`/pesquisa/turma/${turmaId}/historico`),
 
   sortearGrupos: (pesquisaId: string): Promise<SorteioResultado> =>
-    researchHttpClient.post<SorteioResultado>(`/pesquisa/${pesquisaId}/sortear-grupos`),
+    httpClient.post<SorteioResultado>(`/pesquisa/${pesquisaId}/sortear-grupos`),
 
-  encerrar: (pesquisaId: string): Promise<Pesquisa> => researchHttpClient.post<Pesquisa>(`/pesquisa/${pesquisaId}/encerrar`),
+  encerrar: (pesquisaId: string): Promise<Pesquisa> => httpClient.post<Pesquisa>(`/pesquisa/${pesquisaId}/encerrar`),
 
   participantes: (pesquisaId: string): Promise<Participantes> =>
-    researchHttpClient.get<Participantes>(`/pesquisa/${pesquisaId}/participantes`),
+    httpClient.get<Participantes>(`/pesquisa/${pesquisaId}/participantes`),
 
-  exportacao: (pesquisaId: string): Promise<Exportacao> =>
-    researchHttpClient.get<Exportacao>(`/pesquisa/${pesquisaId}/exportacao`),
+  exportacao: (pesquisaId: string): Promise<Exportacao> => httpClient.get<Exportacao>(`/pesquisa/${pesquisaId}/exportacao`),
 }

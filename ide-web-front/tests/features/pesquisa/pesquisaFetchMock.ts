@@ -2,12 +2,10 @@ import { vi } from 'vitest'
 import type { MinhaParticipacao } from '../../../src/features/pesquisa/types'
 
 /**
- * Mock de `fetch` pros testes da pesquisa: simula o Node (envelope `{ data }`, com
- * `/auth/me` e `/pesquisa/token`) e o backend Python (JSON cru). `rotas` recebe o
- * caminho (sem host) e devolve o corpo — ou undefined pra 404.
+ * Mock de `fetch` pros testes da pesquisa: simula o Node (envelope `{ data }`,
+ * incluindo `/auth/me`). `rotas` recebe o caminho (sem host) e devolve o corpo — ou
+ * undefined pra 404.
  */
-const TOKEN_FALSO = `x.${btoa(JSON.stringify({ exp: 4_102_444_800 }))}.y`
-
 export const ALUNO = { id: 'aluno-1', nome: 'Aluno', email: null, papel: 'aluno', turmaId: 'turma-1' }
 
 export const PESQUISA = {
@@ -53,15 +51,12 @@ export function mockFetchPesquisa(rotas: Record<string, unknown>, usuario: unkno
       chamadas.push({ metodo, caminho, corpo: init?.body ? JSON.parse(String(init.body)) : undefined })
 
       if (caminho === '/auth/me') return Promise.resolve(json({ data: usuario }))
-      if (caminho === '/pesquisa/token') return Promise.resolve(json({ data: { token: TOKEN_FALSO } }))
 
       const chave = `${metodo} ${caminho}`
       if (chave in rotas) {
-        const corpo = rotas[chave]
-        const ehNode = url.port === '3000'
-        return Promise.resolve(json(ehNode ? { data: corpo } : corpo))
+        return Promise.resolve(json({ data: rotas[chave] }))
       }
-      return Promise.resolve(json({ detail: 'não encontrado' }, 404))
+      return Promise.resolve(json({ error: { code: 'NOT_FOUND', message: 'não encontrado' } }, 404))
     }),
   )
   return chamadas

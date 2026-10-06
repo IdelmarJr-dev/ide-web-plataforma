@@ -15,7 +15,7 @@ const POLL_INTERVAL_MS = 5000
 /**
  * Pesquisador conduz a coleta numa turma: escolhe os exercícios da tarefa (os mesmos
  * pros dois grupos), inicia, sorteia os grupos entre quem aceitou o TCLE, acompanha,
- * encerra e exporta o CSV anonimizado. Ver docs/decisions/fase6-alinhamento-tcc.md.
+ * encerra e exporta o CSV anonimizado. Ver docs/decisions/fase13-pesquisa-dados-no-node.md.
  */
 export const AdminPesquisaPage = (): ReactNode => {
   const [turmaId, setTurmaId] = useState('')

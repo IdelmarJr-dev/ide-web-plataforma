@@ -6,7 +6,7 @@ Backend do projeto IDE Web, construído em Node.js + Express + TypeScript seguin
 
 ```bash
 npm install
-cp .env.example .env   # ajuste DATABASE_URL, JWT_SECRET, RESEARCH_JWT_SECRET e as SANDBOX_*
+cp .env.example .env   # ajuste DATABASE_URL, JWT_SECRET e as SANDBOX_*
 npx prisma migrate dev # cria o banco ide_web e aplica o schema (precisa de um Postgres em DATABASE_URL)
 npm run dev
 ```
@@ -25,8 +25,6 @@ O servidor sobe em `http://localhost:3000` (porta configurável via `.env`); a A
 | `JWT_SECRET`                 | Segredo usado para assinar access e refresh tokens                     | — (obrigatória)                      |
 | `JWT_ACCESS_EXPIRES_IN`      | Validade do access token                                               | `15m`                                 |
 | `JWT_REFRESH_EXPIRES_IN`     | Validade do refresh token                                              | `7d`                                   |
-| `RESEARCH_JWT_SECRET`        | Segredo compartilhado com o backend Python de pesquisa (self-hosted, à parte deste repositório) | — (obrigatória) |
-| `RESEARCH_JWT_EXPIRES_IN`    | Validade do token curto emitido em `GET /pesquisa/token`               | `30m`                                    |
 | `LLM_API_KEY`                | Chave da API de LLM (dicas de IA) — sem ela, a rota responde `LLM_NAO_CONFIGURADO` | vazio                     |
 | `LLM_MODEL`                  | Modelo usado no provedor de LLM (Groq)                                 | `llama-3.1-8b-instant`                   |
 | `SANDBOX_DATABASE_URL`       | Connection string da role de provisionamento do sandbox SQL (banco separado) | — (obrigatória)                     |

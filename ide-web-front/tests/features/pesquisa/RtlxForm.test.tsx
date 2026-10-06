@@ -40,7 +40,7 @@ describe('RtlxForm', () => {
   it('só envia com as 6 dimensões respondidas', async () => {
     const chamadas = mockFetchPesquisa({
       'GET /pesquisa/minha-participacao': PRONTO_PARA_RTLX,
-      'POST /sessoes/s1/rtlx': { id: 'r1', sessaoId: 's1', pontuacaoRtlx: '50.00' },
+      'POST /pesquisa/sessoes/s1/rtlx': { id: 'r1', sessaoId: 's1', pontuacaoRtlx: '50.00' },
     })
     const user = userEvent.setup()
 
@@ -58,7 +58,7 @@ describe('RtlxForm', () => {
     await user.click(screen.getByRole('button', { name: /enviar/i }))
 
     await waitFor(() => {
-      const envio = chamadas.find((chamada) => chamada.caminho === '/sessoes/s1/rtlx')
+      const envio = chamadas.find((chamada) => chamada.caminho === '/pesquisa/sessoes/s1/rtlx')
       expect(envio?.corpo).toMatchObject({ pontuacaoRtlx: 50 })
     })
   })

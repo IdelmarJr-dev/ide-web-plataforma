@@ -32,10 +32,6 @@ export const config = {
     accessExpiresIn: env.JWT_ACCESS_EXPIRES_IN,
     refreshExpiresIn: env.JWT_REFRESH_EXPIRES_IN,
   },
-  researchJwt: {
-    secret: env.RESEARCH_JWT_SECRET,
-    expiresIn: env.RESEARCH_JWT_EXPIRES_IN,
-  },
   llm: {
     apiKey: env.LLM_API_KEY,
     model: env.LLM_MODEL,

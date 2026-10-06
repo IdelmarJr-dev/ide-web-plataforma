@@ -5,8 +5,14 @@ import { createApp } from '../../src/app';
 describe('rotas de pesquisa', () => {
   const app = createApp();
 
-  it('exige autenticação para gerar o token de pesquisa', async () => {
-    const response = await request(app).get('/api/v1/pesquisa/token');
+  it('exige autenticação para consultar minha participação', async () => {
+    const response = await request(app).get('/api/v1/pesquisa/minha-participacao');
+
+    expect(response.status).toBe(401);
+  });
+
+  it('exige autenticação para iniciar uma pesquisa', async () => {
+    const response = await request(app).post('/api/v1/pesquisa/iniciar').send({});
 
     expect(response.status).toBe(401);
   });

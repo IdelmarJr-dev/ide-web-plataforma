@@ -1,13 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Exercicio, Usuario } from '../../src/generated/prisma/client';
+import type { AlocacaoGrupoRepository } from '../../src/repositories/AlocacaoGrupoRepository';
 import type { DicaIaRepository } from '../../src/repositories/DicaIaRepository';
 import type { ExercicioRepository } from '../../src/repositories/ExercicioRepository';
 import type { SubmissaoSqlRepository } from '../../src/repositories/SubmissaoSqlRepository';
 import type { MatriculaRepository } from '../../src/repositories/MatriculaRepository';
+import type { PesquisaRepository } from '../../src/repositories/PesquisaRepository';
+import type { RespostaRtlxRepository } from '../../src/repositories/RespostaRtlxRepository';
+import type { RespostaSusRepository } from '../../src/repositories/RespostaSusRepository';
+import type { SessaoUsoRepository } from '../../src/repositories/SessaoUsoRepository';
+import type { TcleConsentimentoRepository } from '../../src/repositories/TcleConsentimentoRepository';
 import type { UsuarioRepository } from '../../src/repositories/UsuarioRepository';
 import { PesquisaService } from '../../src/services/PesquisaService';
-import { verifyResearchToken } from '../../src/utils/jwt';
-import { buildMatricula } from '../apoio/acessoExercicio';
 
 function buildAluno(overrides: Partial<Usuario> = {}): Usuario {
   return {
@@ -49,45 +53,27 @@ describe('PesquisaService', () => {
   const findUsuarioById = vi.fn<UsuarioRepository['findById']>();
   const findByIds = vi.fn<ExercicioRepository['findByIds']>();
   const findAlunosDaTurma = vi.fn<MatriculaRepository['findAlunosDaTurma']>();
-  const findMatriculasDoAluno = vi.fn<MatriculaRepository['findByAlunoId']>();
   const findResumoPorExercicios = vi.fn<SubmissaoSqlRepository['findResumoPorExercicios']>();
   const contarPorExercicios = vi.fn<DicaIaRepository['contarPorExercicios']>();
 
   const service = new PesquisaService(
     { findById: findUsuarioById } as unknown as UsuarioRepository,
     { findByIds } as unknown as ExercicioRepository,
-    { findAlunosDaTurma, findByAlunoId: findMatriculasDoAluno } as unknown as MatriculaRepository,
+    { findAlunosDaTurma } as unknown as MatriculaRepository,
     { findResumoPorExercicios } as unknown as SubmissaoSqlRepository,
     { contarPorExercicios } as unknown as DicaIaRepository,
+    {} as unknown as PesquisaRepository,
+    {} as unknown as TcleConsentimentoRepository,
+    {} as unknown as AlocacaoGrupoRepository,
+    {} as unknown as SessaoUsoRepository,
+    {} as unknown as RespostaSusRepository,
+    {} as unknown as RespostaRtlxRepository,
   );
 
   beforeEach(() => {
     vi.clearAllMocks();
     findResumoPorExercicios.mockResolvedValue([]);
     contarPorExercicios.mockResolvedValue([]);
-  });
-
-  describe('gerarToken', () => {
-    it('rejeita gerar token para usuário inexistente', async () => {
-      findUsuarioById.mockResolvedValue(null);
-
-      await expect(service.gerarToken('inexistente')).rejects.toThrow();
-    });
-
-    it('gera um token só com as claims mínimas, sem o nome do aluno', async () => {
-      findUsuarioById.mockResolvedValue(buildAluno());
-      findMatriculasDoAluno.mockResolvedValue([buildMatricula(), buildMatricula({ turma_id: 'turma-2' })]);
-
-      const payload = verifyResearchToken(await service.gerarToken('aluno-1'));
-
-      expect(payload).toMatchObject({
-        usuario_id: 'aluno-1',
-        papel: 'aluno',
-        turma_ids: ['turma-1', 'turma-2'],
-      });
-      expect(payload).not.toHaveProperty('nome');
-      expect(payload).not.toHaveProperty('email');
-    });
   });
 
   describe('acertos', () => {
