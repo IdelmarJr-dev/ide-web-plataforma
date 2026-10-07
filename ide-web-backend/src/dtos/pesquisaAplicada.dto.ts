@@ -38,9 +38,9 @@ const PONTUACAO_MAX = 100;
 // ---- Requests ----
 
 export const iniciarPesquisaBodySchema = z.object({
-  turmaId: z.string().uuid(),
+  turmaId: z.uuid(),
   exercicioIds: z
-    .array(z.string().uuid())
+    .array(z.uuid())
     .min(1)
     .max(MAX_EXERCICIOS_TAREFA)
     .transform((ids) => [...new Set(ids)]),

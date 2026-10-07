@@ -8,7 +8,7 @@ export const acertosQuerySchema = z.object({
     .string()
     .min(1)
     .transform((valor) => [...new Set(valor.split(',').map((id) => id.trim()).filter(Boolean))])
-    .pipe(z.array(z.string().uuid()).min(1).max(MAX_EXERCICIOS)),
+    .pipe(z.array(z.uuid()).min(1).max(MAX_EXERCICIOS)),
 });
 
 export type AcertosQueryDto = z.infer<typeof acertosQuerySchema>;

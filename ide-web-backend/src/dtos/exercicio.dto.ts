@@ -3,10 +3,10 @@ import type { Exercicio } from '../generated/prisma/client';
 import { documentoModelagemSchema, MODOS_EXERCICIO } from './modelagem.schema';
 
 export const criarExercicioBodySchema = z.object({
-  turmaId: z.string().uuid(),
+  turmaId: z.uuid(),
   // Ausente/null = exercício "solto", visível pra turma inteira. Presente = só
   // visível pro aluno sorteado com essa prova (ver docs/decisions/fase5-sorteador-provas.md).
-  provaId: z.string().uuid().nullable().optional(),
+  provaId: z.uuid().nullable().optional(),
   titulo: z.string().min(1),
   enunciado: z.string().min(1),
   nivelDificuldade: z.enum(['iniciante', 'intermediario']),
@@ -28,7 +28,7 @@ export type CriarExercicioBodyDto = z.infer<typeof criarExercicioBodySchema>;
 
 export const atualizarExercicioBodySchema = z.object({
   titulo: z.string().min(1).optional(),
-  provaId: z.string().uuid().nullable().optional(),
+  provaId: z.uuid().nullable().optional(),
   enunciado: z.string().min(1).optional(),
   nivelDificuldade: z.enum(['iniciante', 'intermediario']).optional(),
   ordem: z.number().int().nonnegative().optional(),

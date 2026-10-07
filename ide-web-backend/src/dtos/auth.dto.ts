@@ -12,7 +12,7 @@ const MIN_PASSWORD_LENGTH = 8;
 // existe fazendo login), só o registro público é que fecha essa porta.
 export const registrarBodySchema = z.object({
   nome: z.string().min(1),
-  email: z.string().email(),
+  email: z.email(),
   senha: z.string().min(MIN_PASSWORD_LENGTH),
   papel: z.enum(['aluno', 'professor']),
 });
@@ -20,7 +20,7 @@ export const registrarBodySchema = z.object({
 export type RegistrarBodyDto = z.infer<typeof registrarBodySchema>;
 
 export const loginBodySchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   senha: z.string().min(1),
 });
 

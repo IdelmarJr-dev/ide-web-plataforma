@@ -4,7 +4,7 @@ import type { HealthStatus } from '../models/HealthStatus';
 export const healthResponseSchema = z.object({
   status: z.enum(['up', 'degraded', 'down']),
   uptimeSeconds: z.number().nonnegative(),
-  checkedAt: z.string().datetime(),
+  checkedAt: z.iso.datetime(),
 });
 
 export type HealthResponseDto = z.infer<typeof healthResponseSchema>;

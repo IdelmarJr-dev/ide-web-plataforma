@@ -63,7 +63,7 @@ export const VERSAO_DOCUMENTO = 2;
 
 const idSchema = z.string().min(1).max(LIMITES.id);
 const nomeSchema = z.string().max(LIMITES.nome);
-const posicaoSchema = z.object({ x: z.number().finite(), y: z.number().finite() });
+const posicaoSchema = z.object({ x: z.number(), y: z.number() });
 
 const colunaSchema = z.object({
   id: idSchema,
@@ -265,7 +265,7 @@ export const documentoModelagemSchema = z
       ...(documento.logico ? problemasDoLogico(documento.logico) : []),
     ];
     for (const problema of problemas) {
-      contexto.addIssue({ code: z.ZodIssueCode.custom, message: `Modelo inconsistente: ${problema}` });
+      contexto.addIssue({ code: 'custom', message: `Modelo inconsistente: ${problema}` });
     }
   });
 
