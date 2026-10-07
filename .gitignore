@@ -3,6 +3,10 @@
 .claude
 /CLAUDE.md
 
+# Override local do docker-compose (ex.: remapear porta quando há conflito com um
+# Postgres nativo já instalado na máquina) — específico de cada máquina, nunca committar.
+docker-compose.override.yml
+
 # CodeWiki: artefatos intermediários e módulos de pesquisa (sorteio de grupo,
 # TCLE, SUS/RTLX) não devem ir pro repositório público durante a coleta de
 # dados do TCC — ver docs/decisions/fase6-alinhamento-tcc.md
