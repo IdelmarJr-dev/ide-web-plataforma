@@ -18,3 +18,14 @@ export interface EstadoDica {
 export interface PedirDicaInput extends EstadoDica {
   contexto: ContextoDica
 }
+
+// Estudo livre (Fase 8): sem exercício/gabarito por trás, por isso sem `id`/`contexto`
+// persistidos — ver DicaLivreService no backend.
+export interface PedirDicaLivreInput {
+  sql: string
+  objetivo?: string
+}
+
+export interface DicaLivre {
+  respostaIa: string
+}

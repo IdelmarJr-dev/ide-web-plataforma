@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Button } from '~components/Button/Button'
 import { Modal } from '~components/Modal/Modal'
+import { PedirDicaLivreButton } from '~features/dica-ia'
 import { ResultadoSandbox } from '~features/exercicio/components/SandboxPainel'
 import { estudoLivreService } from '../services/estudoLivreService'
 
@@ -79,6 +80,7 @@ export const BancoLivre = ({ sql, onSqlChange }: BancoLivreProps): ReactNode => 
         >
           Limpar meu banco
         </Button>
+        <PedirDicaLivreButton sql={sql} />
       </div>
 
       {executarMutation.isError ? (

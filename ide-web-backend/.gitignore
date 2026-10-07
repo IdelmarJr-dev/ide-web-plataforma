@@ -5,3 +5,13 @@ dist/
 coverage/
 
 /src/generated/prisma
+
+# Gerado por scripts/seed-pesquisa-teste.ts — ponte local pro e2e-pesquisa-smoke.ts,
+# não é segredo de produção mas não precisa ir pro histórico do git.
+/scripts/.pesquisa-teste-cenario.json
+/scripts/.pesquisa-teste-export.csv
+
+# Smoke test E2E da pesquisa — depende de Docker/backend rodando localmente e ainda
+# não foi validado de ponta a ponta contra um ambiente real; fica só local até isso
+# acontecer.
+/scripts/e2e-pesquisa-smoke.ts

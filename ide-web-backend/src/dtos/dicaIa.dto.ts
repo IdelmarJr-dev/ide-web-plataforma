@@ -37,3 +37,26 @@ export function toDicaIaResponseDto(dica: DicaIa): DicaIaResponseDto {
     criadoEm: dica.criado_em.toISOString(),
   };
 }
+
+const TAMANHO_MAXIMO_SQL_LIVRE = 10_000;
+const TAMANHO_MAXIMO_OBJETIVO = 500;
+
+// Estudo livre não tem exercício/gabarito por trás (Fase 8) — a dica aqui reage só ao
+// que o aluno escreveu no banco próprio e, opcionalmente, ao que ele diz que está
+// tentando fazer. Sem contexto/gabarito, não há como aplicar a mesma quota por
+// exercício do fluxo normal (ver DicaIaService) — o limite aqui é por taxa (ver
+// DicaLivreService), não por conteúdo.
+export const pedirDicaLivreBodySchema = z.object({
+  sql: z
+    .string()
+    .trim()
+    .min(1, 'Escreva alguma coisa no editor SQL antes de pedir dica')
+    .max(TAMANHO_MAXIMO_SQL_LIVRE),
+  objetivo: z.string().trim().max(TAMANHO_MAXIMO_OBJETIVO).optional(),
+});
+
+export type PedirDicaLivreBodyDto = z.infer<typeof pedirDicaLivreBodySchema>;
+
+export interface DicaLivreResponseDto {
+  respostaIa: string;
+}

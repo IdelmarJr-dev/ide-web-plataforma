@@ -12,4 +12,12 @@ describe('rotas de dicas de IA', () => {
 
     expect(response.status).toBe(401);
   });
+
+  it('exige autenticação para pedir dica no estudo livre', async () => {
+    const response = await request(app)
+      .post('/api/v1/sandbox/livre/dicas')
+      .send({ sql: 'SELECT * FROM cliente' });
+
+    expect(response.status).toBe(401);
+  });
 });

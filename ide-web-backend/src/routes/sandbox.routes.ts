@@ -1,8 +1,10 @@
 import { Router } from 'express';
+import { DicaLivreController } from '../controllers/DicaLivreController';
 import { PacoteController } from '../controllers/PacoteController';
 import { SandboxController } from '../controllers/SandboxController';
 import { requireAuth } from '../middlewares/requireAuth';
 import { requirePapel } from '../middlewares/requirePapel';
+import { GroqLlmClient } from '../repositories/llm/GroqLlmClient';
 import { PrismaExercicioRepository } from '../repositories/ExercicioRepository';
 import { PrismaMatriculaRepository } from '../repositories/MatriculaRepository';
 import { PrismaRespostaDissertativaRepository } from '../repositories/RespostaDissertativaRepository';
@@ -12,6 +14,7 @@ import { PgSandboxProvisioningRepository } from '../repositories/sandbox/Sandbox
 import { PrismaSubmissaoSqlRepository } from '../repositories/SubmissaoSqlRepository';
 import { PrismaTurmaRepository } from '../repositories/TurmaRepository';
 import { AcessoExercicioService } from '../services/AcessoExercicioService';
+import { DicaLivreService } from '../services/DicaLivreService';
 import { PacoteService } from '../services/PacoteService';
 import { SandboxSqlService } from '../services/SandboxSqlService';
 import { asyncHandler } from '../utils/asyncHandler';
@@ -51,6 +54,8 @@ const pacoteService = new PacoteService(
 
 const sandboxController = new SandboxController(sandboxSqlService);
 const pacoteController = new PacoteController(pacoteService);
+const dicaLivreService = new DicaLivreService(new GroqLlmClient());
+const dicaLivreController = new DicaLivreController(dicaLivreService);
 
 export const sandboxRoutes = Router();
 
@@ -95,4 +100,11 @@ sandboxRoutes.delete(
   requireAuth,
   requirePapel('aluno'),
   asyncHandler((req, res) => sandboxController.limparLivre(req, res)),
+);
+
+sandboxRoutes.post(
+  '/sandbox/livre/dicas',
+  requireAuth,
+  requirePapel('aluno'),
+  asyncHandler((req, res) => dicaLivreController.pedir(req, res)),
 );
