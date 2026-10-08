@@ -21,8 +21,8 @@ export const AdminPesquisaPage = (): ReactNode => {
   const [turmaId, setTurmaId] = useState('')
 
   const turmasQuery = useQuery({
-    queryKey: ['turmas', 'minhas'],
-    queryFn: turmasService.minhas,
+    queryKey: ['turmas', 'pesquisa'],
+    queryFn: turmasService.todasParaPesquisa,
   })
 
   const statusQuery = usePesquisaStatus(turmaId || null)

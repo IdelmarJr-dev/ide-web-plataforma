@@ -195,6 +195,18 @@ describe('ExercicioService', () => {
     expect(exercicios).toHaveLength(2);
   });
 
+  it('pesquisador só recebe gabarito nas turmas que são dele', async () => {
+    findTurmaById.mockResolvedValue(buildTurma({ professor_id: 'outro-professor' }));
+    await expect(service.podeVerGabarito('pesquisador-1', 'pesquisador', 'turma-1')).resolves.toBe(false);
+
+    findTurmaById.mockResolvedValue(buildTurma({ professor_id: 'pesquisador-1' }));
+    await expect(service.podeVerGabarito('pesquisador-1', 'pesquisador', 'turma-1')).resolves.toBe(true);
+  });
+
+  it('aluno nunca recebe gabarito', async () => {
+    await expect(service.podeVerGabarito('aluno-1', 'aluno', 'turma-1')).resolves.toBe(false);
+  });
+
   it('pesquisador recebe 404 para turma inexistente', async () => {
     findTurmaById.mockResolvedValue(null);
 

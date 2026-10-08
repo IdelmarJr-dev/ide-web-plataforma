@@ -27,19 +27,21 @@ export class TurmaService {
   }
 
   async minhas(usuarioId: string, papel: Usuario['papel']): Promise<Turma[]> {
-    if (papel === 'professor') {
+    if (papel === 'professor' || papel === 'pesquisador') {
       return this.turmaRepository.findByProfessorId(usuarioId);
-    }
-
-    if (papel === 'pesquisador') {
-      // Pesquisador precisa ver todas as turmas pra escolher em qual "Iniciar
-      // pesquisa" (ver docs/decisions/fase4-pesquisa-python-sessao-aluno-login.md).
-      return this.turmaRepository.findAll();
     }
 
     const matriculas = await this.matriculaRepository.findByAlunoId(usuarioId);
     const turmas = await Promise.all(matriculas.map((matricula) => this.turmaRepository.findById(matricula.turma_id)));
     return turmas.filter((turma): turma is Turma => turma !== null);
+  }
+
+  /**
+   * Só pra escolher em qual turma iniciar a pesquisa do TCC — sai junto com o módulo de
+   * pesquisa. Nunca usar pra telas de gestão: aí cada um vê só as próprias turmas.
+   */
+  todasParaPesquisa(): Promise<Turma[]> {
+    return this.turmaRepository.findAll();
   }
 
   async listarAlunos(professorId: string, turmaId: string): Promise<Usuario[]> {

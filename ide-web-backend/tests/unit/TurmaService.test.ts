@@ -48,6 +48,7 @@ describe('TurmaService', () => {
   const findTurmaById = vi.fn<TurmaRepository['findById']>();
   const findTurmaByCodigo = vi.fn<TurmaRepository['findByCodigo']>();
   const findAll = vi.fn<TurmaRepository['findAll']>();
+  const findByProfessorId = vi.fn<TurmaRepository['findByProfessorId']>();
   const definirEncerramento = vi.fn<TurmaRepository['definirEncerramento']>();
   const findAlunosDaTurma = vi.fn<MatriculaRepository['findAlunosDaTurma']>();
   const findByAlunoETurma = vi.fn<MatriculaRepository['findByAlunoETurma']>();
@@ -57,7 +58,7 @@ describe('TurmaService', () => {
   const turmaRepository: TurmaRepository = {
     findById: findTurmaById,
     findByCodigo: findTurmaByCodigo,
-    findByProfessorId: vi.fn(),
+    findByProfessorId,
     findAll,
     create: vi.fn(),
     definirEncerramento,
@@ -76,13 +77,22 @@ describe('TurmaService', () => {
     vi.clearAllMocks();
   });
 
-  it('lista todas as turmas pro pesquisador (pra escolher onde iniciar a pesquisa)', async () => {
+  it.each(['professor', 'pesquisador'] as const)('"minhas" do %s traz só as turmas dele', async (papel) => {
+    findByProfessorId.mockResolvedValue([buildTurma({ professor_id: 'usuario-1' })]);
+
+    const turmas = await service.minhas('usuario-1', papel);
+
+    expect(findByProfessorId).toHaveBeenCalledWith('usuario-1');
+    expect(findAll).not.toHaveBeenCalled();
+    expect(turmas).toHaveLength(1);
+  });
+
+  it('lista todas as turmas só pro painel da pesquisa', async () => {
     findAll.mockResolvedValue([buildTurma(), buildTurma({ id: 'turma-2', codigo: 'DEF456' })]);
 
-    const turmas = await service.minhas('pesquisador-1', 'pesquisador');
+    const turmas = await service.todasParaPesquisa();
 
     expect(turmas).toHaveLength(2);
-    expect(findAll).toHaveBeenCalled();
   });
 
   it('devolve todas as turmas em que o aluno está matriculado', async () => {

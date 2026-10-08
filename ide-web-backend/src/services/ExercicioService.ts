@@ -96,6 +96,19 @@ export class ExercicioService {
     return exercicio;
   }
 
+  /**
+   * Gabarito só vai pra quem é dono da turma. O pesquisador lê exercícios de qualquer
+   * turma pra montar a tarefa da pesquisa, mas nas turmas de outro professor recebe a
+   * versão do aluno.
+   */
+  async podeVerGabarito(usuarioId: string, papel: Papel, turmaId: string): Promise<boolean> {
+    if (papel === 'aluno') return false;
+    if (papel === 'professor') return true;
+
+    const turma = await this.turmaRepository.findById(turmaId);
+    return turma?.professor_id === usuarioId;
+  }
+
   private async buscarParaAluno(usuarioId: string, exercicioId: string): Promise<Exercicio> {
     const exercicio = await this.acessoExercicio.exigirLeitura(usuarioId, exercicioId);
 

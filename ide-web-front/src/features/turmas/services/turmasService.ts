@@ -6,6 +6,9 @@ export const turmasService = {
 
   minhas: (): Promise<Turma[]> => httpClient.get<Turma[]>('/turmas/minhas'),
 
+  // Só pro painel da pesquisa: todas as turmas, de qualquer professor.
+  todasParaPesquisa: (): Promise<Turma[]> => httpClient.get<Turma[]>('/pesquisa/turmas'),
+
   listarAlunos: (turmaId: string): Promise<Aluno[]> => httpClient.get<Aluno[]>(`/turmas/${turmaId}/alunos`),
 
   matricular: (codigo: string): Promise<Turma> => httpClient.post<Turma>(`/turmas/${codigo}/matricular`),

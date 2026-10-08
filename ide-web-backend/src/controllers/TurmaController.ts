@@ -34,6 +34,11 @@ export class TurmaController extends BaseController {
     this.handleSuccess(res, turmas.map(toTurmaResponseDto));
   };
 
+  todasParaPesquisa = async (_req: Request, res: Response): Promise<void> => {
+    const turmas = await this.turmaService.todasParaPesquisa();
+    this.handleSuccess(res, turmas.map(toTurmaResponseDto));
+  };
+
   listarAlunos = async (req: Request, res: Response): Promise<void> => {
     if (!req.usuario) {
       throw new UnauthorizedError('Autenticação necessária');

@@ -23,6 +23,14 @@ turmaRoutes.post(
 
 turmaRoutes.get('/turmas/minhas', requireAuth, asyncHandler((req, res) => turmaController.minhas(req, res)));
 
+// Só o painel da pesquisa do TCC (/admin/pesquisa) lista turmas de outros professores.
+turmaRoutes.get(
+  '/pesquisa/turmas',
+  requireAuth,
+  requirePapel('pesquisador'),
+  asyncHandler((req, res) => turmaController.todasParaPesquisa(req, res)),
+);
+
 turmaRoutes.get(
   '/turmas/:id/alunos',
   requireAuth,
