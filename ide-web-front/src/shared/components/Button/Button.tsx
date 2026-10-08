@@ -9,7 +9,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT_CLASSES: Record<NonNullable<ButtonProps['variant']>, string> = {
-  primary: 'bg-primary-600 text-white hover:bg-primary-700 focus-visible:outline-primary-600',
+  // No tema escuro primary-700 vira tom claro (texto sobre tint), ilegível sob texto branco.
+  primary: 'bg-primary-600 text-white hover:bg-primary-700 dark:hover:bg-primary-500 focus-visible:outline-primary-600',
   danger: 'bg-danger-500 text-white hover:bg-danger-600 focus-visible:outline-danger-500',
   ghost: 'bg-transparent text-neutral-900 hover:bg-neutral-100 focus-visible:outline-neutral-600',
 }

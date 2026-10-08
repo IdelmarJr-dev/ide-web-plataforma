@@ -63,6 +63,7 @@ export const MinhasTurmasList = (): ReactNode => {
               <Button
                 variant="ghost"
                 onClick={() => {
+                  encerramentoMutation.reset()
                   setTurmaParaEncerrar(turma)
                 }}
               >
@@ -81,6 +82,11 @@ export const MinhasTurmasList = (): ReactNode => {
                   Reabrir
                 </Button>
               </>
+            )}
+            {encerramentoMutation.isError && !encerramentoMutation.variables.encerrar && encerramentoMutation.variables.id === turma.id && (
+              <p role="alert" className="text-sm text-danger-500">
+                Não foi possível reabrir: {encerramentoMutation.error.message}
+              </p>
             )}
           </div>
           <div className="mt-4">
@@ -104,6 +110,11 @@ export const MinhasTurmasList = (): ReactNode => {
           Os alunos de {turmaParaEncerrar?.nome} continuam vendo a turma e o que entregaram, mas param de enviar
           respostas, e o código deixa de matricular gente nova. Dá pra reabrir depois.
         </p>
+        {encerramentoMutation.isError && encerramentoMutation.variables.encerrar && (
+          <p role="alert" className="mt-3 text-sm text-danger-500">
+            Não foi possível encerrar: {encerramentoMutation.error.message}
+          </p>
+        )}
         <div className="mt-4 flex gap-2">
           <Button
             isLoading={encerramentoMutation.isPending}

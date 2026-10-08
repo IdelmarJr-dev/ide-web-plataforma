@@ -16,7 +16,7 @@ export const NaoEncontrado = (): ReactNode => {
       </p>
       <Link
         to={destino}
-        className="w-fit rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700
+        className="w-fit rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 dark:hover:bg-primary-500
           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
       >
         {usuario ? 'Voltar ao início' : 'Ir para o login'}

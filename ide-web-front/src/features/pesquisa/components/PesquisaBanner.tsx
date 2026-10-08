@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useMinhaParticipacao } from '../hooks/useMinhaParticipacao'
 
 const LINK_CLASSES = `mt-3 inline-flex items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm
-  font-medium text-white transition-colors hover:bg-primary-700`
+  font-medium text-white transition-colors hover:bg-primary-700 dark:hover:bg-primary-500`
 
 export const PesquisaBanner = (): ReactNode => {
   const { data: participacao } = useMinhaParticipacao()
