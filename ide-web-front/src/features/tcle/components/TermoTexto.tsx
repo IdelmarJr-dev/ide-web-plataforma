@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-// Versão 2.0 do termo — mesmo conteúdo do Apêndice A do TCC (tcc/latex_tcc/textual/apendice-a.tex)
+// Versão 3.0 do termo — mesmo conteúdo do Apêndice A do TCC (tcc/pos-textual/apendice-a.tex)
 // e da constante TCLE_VERSAO_ATUAL em ide-web-backend/src/dtos/pesquisaAplicada.dto.ts.
 // Mudou o texto? Mude os três.
 // O contato do Comitê de Ética em Pesquisa (CEP) só existe depois da submissão — ele fica
@@ -38,9 +38,9 @@ export const TermoTexto = (): ReactNode => (
     </p>
 
     <p>
-      <strong>Confidencialidade:</strong> sua identidade será mantida em sigilo. Suas respostas ficam armazenadas
-      separadamente da sua conta, num servidor próprio do pesquisador — nunca em serviços de nuvem de terceiros. Os
-      dados são analisados sem nome, com um código de participante (P01, P02…), e publicados somente de forma agregada,
+      <strong>Confidencialidade:</strong> sua identidade será mantida em sigilo. Suas respostas ficam armazenadas no
+      banco de dados do sistema, um serviço de banco de dados em nuvem, sem seu nome nem seu e-mail, ligadas apenas a
+      um identificador interno, e somente o pesquisador tem acesso a elas. Os dados são analisados sem nome, com um código de participante (P01, P02…), e publicados somente de forma agregada,
       para fins acadêmicos, sem possibilidade de identificação individual.
     </p>
 

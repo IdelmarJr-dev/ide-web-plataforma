@@ -14,7 +14,7 @@ const MAX_EXERCICIOS_TAREFA = 50;
 
 // Versão vigente do termo — mesmo texto de `features/tcle/components/TermoTexto.tsx`
 // e do Apêndice A do TCC. Mudou o texto? Mude os dois.
-export const TCLE_VERSAO_ATUAL = '2.0';
+export const TCLE_VERSAO_ATUAL = '3.0';
 
 export const SUS_ITENS = Array.from({ length: 10 }, (_, indice) => String(indice + 1));
 const SUS_MIN = 1;

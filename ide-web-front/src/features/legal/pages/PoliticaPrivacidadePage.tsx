@@ -53,9 +53,9 @@ export const PoliticaPrivacidadePage = (): ReactNode => {
           <p className="mt-2">
             Os dados de uso do produto (contas, turmas, exercícios, diagramas, submissões) ficam num banco de dados
             gerenciado (Supabase). Os dados de pesquisa com seres humanos — consentimento (TCLE), grupo sorteado e
-            respostas SUS/RTLX — nunca vão para esse serviço gerenciado: ficam num servidor próprio do autor da
-            pesquisa, self-hosted, justamente para manter esse dado sensível fora de qualquer nuvem de terceiros. Para a
-            análise estatística, os dados são exportados sem nome, com um código de participante (P01, P02…).
+            respostas SUS/RTLX — ficam no mesmo banco, em tabelas separadas, sem nome nem e-mail (ligados só a um
+            identificador interno), e só o pesquisador tem acesso a eles. Para a análise estatística, os dados são
+            exportados sem nome, com um código de participante (P01, P02…).
           </p>
         </section>
 
