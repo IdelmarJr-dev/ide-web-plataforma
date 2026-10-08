@@ -11,6 +11,9 @@ coverage/
 /scripts/.pesquisa-teste-cenario.json
 /scripts/.pesquisa-teste-export.csv
 
+# Gerado por scripts/seed-contas-alunos.ts — senhas das contas de aluno da coleta.
+/scripts/.contas-alunos.csv
+
 # Smoke test E2E da pesquisa — depende de Docker/backend rodando localmente e ainda
 # não foi validado de ponta a ponta contra um ambiente real; fica só local até isso
 # acontecer.
