@@ -166,12 +166,14 @@ export async function simularApi(
     // GET /painel/aluno e /painel/professor (Fase 9). O padrão não é `null`.
     painelAluno?: Record<string, unknown>
     painelProfessor?: Record<string, unknown>
-    // Resposta do backend Python em /pesquisa/minha-participacao. Sem isto o serviço
-    // responde 503 e o banner de pesquisa não aparece.
+    // Resposta de GET /pesquisa/minha-participacao (Node). Sem isto, nenhuma pesquisa ativa.
     participacao?: Record<string, unknown>
   } = {},
 ): Promise<ApiSimulada> {
   const estado: ApiSimulada = { salvamentos: [], pacotes: [], finalizacoes: 0 }
+  const semPesquisa = (): Record<string, unknown> => ({
+    pesquisa: null, tcle: 'pendente', grupo: null, ambiente: null, sessao: null, susRespondido: false, rtlxRespondido: false,
+  })
   const cabecalhos = {
     'access-control-allow-origin': 'http://localhost:5188',
     'access-control-allow-credentials': 'true',
@@ -225,19 +227,11 @@ export async function simularApi(
       return rota.fulfill(responder(opcoes.painelProfessor ?? painelProfessorPadrao()))
     }
     if (url.endsWith('/exercicios/e1')) return rota.fulfill(responder(opcoes.exercicio ?? exercicio()))
-    if (url.includes('/pesquisa/token')) {
-      return opcoes.participacao
-        ? rota.fulfill(responder({ token: 'token-de-teste' }))
-        : rota.fulfill(responder('indisponível', 503))
+    // Desde a Fase 13 a participação vem do próprio Node (antes, do backend Python em :8001).
+    if (url.endsWith('/pesquisa/minha-participacao')) {
+      return rota.fulfill(responder(opcoes.participacao ?? semPesquisa()))
     }
     return rota.fulfill(responder(null))
-  })
-  await page.route('http://localhost:8001/**', (rota) => {
-    if (rota.request().method() === 'OPTIONS') return rota.fulfill({ status: 204, headers: cabecalhos })
-    if (opcoes.participacao && rota.request().url().includes('/pesquisa/minha-participacao')) {
-      return rota.fulfill({ status: 200, headers: cabecalhos, body: JSON.stringify(opcoes.participacao) })
-    }
-    return rota.fulfill({ status: 503, headers: cabecalhos, body: '{}' })
   })
   return estado
 }
