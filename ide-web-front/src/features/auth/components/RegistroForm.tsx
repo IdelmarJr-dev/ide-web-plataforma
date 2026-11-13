@@ -58,9 +58,18 @@ export const RegistroForm = ({ papelInicial = 'professor', codigoInicial = '' }:
       registrar(result.data)
         .then(async () => {
           // Matricular é best-effort: se falhar (código errado, turma encerrada), a conta já
-          // foi criada — o aluno tenta de novo pelo painel em vez de perder o cadastro.
+          // foi criada — o aluno tenta de novo pelo painel em vez de perder o cadastro. O
+          // motivo vai junto pro painel, que avisa e já deixa o código no campo pra corrigir.
           if (papel === 'aluno' && codigoTurma.trim() !== '') {
-            await turmasService.matricular(codigoTurma.trim()).catch(() => undefined)
+            const codigo = codigoTurma.trim()
+            const recusa = await turmasService.matricular(codigo).then(
+              () => null,
+              (erro: unknown) => ({ codigo, motivo: erro instanceof Error ? erro.message : 'Não foi possível entrar na turma.' }),
+            )
+            if (recusa) {
+              void navigate('/dashboard', { state: { matriculaRecusada: recusa } })
+              return
+            }
           }
           void navigate('/dashboard')
         })

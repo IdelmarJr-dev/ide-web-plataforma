@@ -13,15 +13,17 @@ function createTestQueryClient(): QueryClient {
 
 interface RenderWithProvidersOptions {
   route?: string
+  // `location.state` da rota inicial (ex.: aviso passado por navigate(..., { state })).
+  state?: unknown
 }
 
 export function renderWithProviders(ui: ReactElement, options: RenderWithProvidersOptions = {}): RenderResult {
-  const { route = '/' } = options
+  const { route = '/', state } = options
   const queryClient = createTestQueryClient()
 
   const Wrapper = ({ children }: { children: ReactNode }): ReactNode => (
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[route]}>
+      <MemoryRouter initialEntries={[{ pathname: route, state }]}>
         <AuthProvider>{children}</AuthProvider>
       </MemoryRouter>
     </QueryClientProvider>
