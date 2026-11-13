@@ -135,6 +135,7 @@ describe('ResultadoExercicioService', () => {
   const submissaoRepository = { findUltimaTentativa } as unknown as SubmissaoSqlRepository;
   const respostaDissertativaRepository: RespostaDissertativaRepository = {
     findByExercicioEUsuario: findDissertativa,
+    salvar: vi.fn(),
   };
   const service = new ResultadoExercicioService(
     resultadoRepository,

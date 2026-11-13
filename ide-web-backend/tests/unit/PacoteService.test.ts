@@ -63,6 +63,7 @@ describe('PacoteService', () => {
   };
   const respostaDissertativaRepository: RespostaDissertativaRepository = {
     findByExercicioEUsuario: findRespostaDissertativa,
+    salvar: vi.fn(),
   };
   const provisioningRepository: SandboxProvisioningRepository = {
     garantirSchema: vi.fn(),
