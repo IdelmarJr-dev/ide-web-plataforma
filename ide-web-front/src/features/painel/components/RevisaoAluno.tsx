@@ -17,6 +17,13 @@ interface NotasDigitadas {
   sqlCorreto?: boolean
 }
 
+// Nome do campo como aparece na tela, para a mensagem de erro dizer qual nota corrigir.
+const ROTULO_DA_NOTA: Record<string, string> = {
+  merAvaliacao: 'Modelagem',
+  dissertativaAvaliacao: 'Dissertativa',
+  pontuacao: 'Nota final',
+}
+
 function valorInicial(nota: number | null): string {
   return nota === null ? '' : String(nota)
 }
@@ -81,7 +88,9 @@ function CartaoAtividade({
     })
 
     if (!resultado.success) {
-      setErro(resultado.error.issues[0]?.message ?? 'Verifique as notas.')
+      const problema = resultado.error.issues[0]
+      const campo = problema ? ROTULO_DA_NOTA[String(problema.path[0])] : undefined
+      setErro(campo && problema ? `${campo}: ${problema.message}` : 'Verifique as notas.')
       return
     }
 
@@ -132,7 +141,11 @@ function CartaoAtividade({
           <div className="flex flex-wrap items-baseline gap-x-3">
             <h3 className="text-sm font-semibold text-neutral-900">Última consulta enviada</h3>
             {respostas.ultimaSubmissaoSql.correta === null ? (
-              <span className="text-xs text-neutral-600">sem gabarito para conferir automaticamente</span>
+              <span className="text-xs text-neutral-600">
+                {atividade.ultimoEnvioComErro
+                  ? 'não executou (erro na consulta), então não foi conferida'
+                  : 'sem gabarito para conferir automaticamente'}
+              </span>
             ) : (
               <span
                 className={`text-xs font-medium ${
