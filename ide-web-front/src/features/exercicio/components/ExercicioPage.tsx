@@ -145,7 +145,8 @@ export const ExercicioPage = (): ReactNode => {
           </section>
         ) : null}
         {exercicio.temSql ? (
-          <section aria-label="Consulta SQL" className="flex h-[80vh] min-h-0 flex-col gap-2 lg:h-auto">
+          // `lg:overflow-y-auto`: resultado longo rola dentro da coluna em vez de invadir a dissertativa.
+          <section aria-label="Consulta SQL" className="flex h-[80vh] min-h-0 flex-col gap-2 lg:h-auto lg:overflow-y-auto">
             <div className="min-h-48 flex-1">
               <SQLEditor
                 exercicioId={exercicio.id}
