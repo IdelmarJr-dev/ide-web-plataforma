@@ -75,6 +75,13 @@ export interface DiagramaMer {
   atualizadoEm: string
 }
 
+export interface RespostaDissertativa {
+  exercicioId: string
+  texto: string
+  versao: number
+  atualizadoEm: string
+}
+
 export interface ResultadoExercicio {
   id: string
   usuarioId: string
