@@ -148,6 +148,35 @@ describe('SandboxSqlService', () => {
     expect(upsertAcertoAutomatico).not.toHaveBeenCalled();
   });
 
+  // Antes, comentário ou espaço passava pela execução e quebrava no EXPLAIN com 500, depois de
+  // já ter consumido a liberação de envio dada pelo professor.
+  it.each(['-- escreva sua consulta aqui', '   ', '/* rascunho */ ;'])(
+    '"enviar" recusa consulta sem instrução (%j) antes de executar ou gastar tentativa',
+    async (sql) => {
+      findExercicioById.mockResolvedValue(buildExercicio());
+      darAcesso();
+
+      await expect(service.enviar(USUARIO_ID, EXERCICIO_ID, sql)).rejects.toThrow(/Escreva uma consulta antes de enviar/);
+      expect(garantirSchema).not.toHaveBeenCalled();
+      expect(executar).not.toHaveBeenCalled();
+      expect(criarComLog).not.toHaveBeenCalled();
+    },
+  );
+
+  it('um EXPLAIN que falha não derruba o envio: grava a submissão e devolve o plano nulo', async () => {
+    findExercicioById.mockResolvedValue(buildExercicio());
+    darAcesso();
+    executar.mockResolvedValueOnce({ status: 'sucesso', rows: [{ id: 1 }] });
+    executar.mockResolvedValueOnce({ status: 'sucesso', rows: [{ id: 1 }] });
+    explain.mockRejectedValue(new Error('syntax error at end of input'));
+
+    const resultado = await service.enviar(USUARIO_ID, EXERCICIO_ID, 'SELECT id FROM usuarios');
+
+    expect(resultado.correta).toBe(true);
+    expect(resultado.plano).toBeNull();
+    expect(criarComLog).toHaveBeenCalledWith(expect.objectContaining({ correta: true }));
+  });
+
   it('marca como correta quando o conjunto de linhas do aluno bate com o gabarito, ignorando ordem', async () => {
     findExercicioById.mockResolvedValue(buildExercicio());
     darAcesso();
