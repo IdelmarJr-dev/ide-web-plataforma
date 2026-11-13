@@ -72,6 +72,8 @@ export const CriarExercicioForm = ({ turmaId }: CriarExercicioFormProps): ReactN
     mutationFn: exercicioService.criar,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['turmas', turmaId, 'exercicios'] })
+      // O assistente de prova conta os exercícios sem prova; sem isto ele seguia com o número antigo.
+      void queryClient.invalidateQueries({ queryKey: ['turmas', turmaId, 'provas', 'acervo'] })
       setTitulo('')
       setEnunciado('')
       setPrazo('')
