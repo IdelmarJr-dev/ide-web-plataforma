@@ -86,4 +86,52 @@ describe('SandboxPainel em questão de prova', () => {
 
     expect(houveEnvio()).toBe(true)
   })
+
+  it('depois do envio da prova, trava o botão e diz como conseguir outro envio', async () => {
+    renderWithProviders(<SandboxPainel exercicioId="e1" sql="SELECT 1" ehProva />)
+    const user = userEvent.setup()
+
+    await user.click(screen.getByRole('button', { name: /enviar resposta/i }))
+    await user.click(await screen.findByRole('button', { name: /enviar definitivamente/i }))
+
+    expect(await screen.findByText(/peça ao professor para liberar um novo envio/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /enviar resposta/i })).toBeDisabled()
+  })
+})
+
+describe('SandboxPainel quando o servidor recusa ou não responde', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  // Antes, a recusa (prazo, turma encerrada, envio único já usado) não aparecia na tela.
+  it('mostra a regra que o servidor usou para recusar o envio', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({ error: { code: 'FORBIDDEN', message: 'O prazo desta atividade encerrou em 31/12/2026 23:59' } }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
+          ),
+        ),
+      ),
+    )
+    renderWithProviders(<SandboxPainel exercicioId="e1" sql="SELECT 1" />)
+    const user = userEvent.setup()
+
+    await user.click(screen.getByRole('button', { name: /enviar resposta/i }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('O prazo desta atividade encerrou em 31/12/2026 23:59.')
+  })
+
+  it('distingue falta de conexão de recusa do servidor', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new TypeError('Failed to fetch'))))
+    renderWithProviders(<SandboxPainel exercicioId="e1" sql="SELECT 1" />)
+    const user = userEvent.setup()
+
+    await user.click(screen.getByRole('button', { name: 'Testar' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/sem conexão com o servidor/i)
+  })
 })

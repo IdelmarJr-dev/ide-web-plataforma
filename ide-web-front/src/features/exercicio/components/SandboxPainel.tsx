@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Button } from '~components/Button/Button'
 import { Modal } from '~components/Modal/Modal'
+import { HttpError } from '../../../lib/httpClient'
 import { exercicioService } from '../services/exercicioService'
 import type { SandboxEnvioResultado, SandboxResultado } from '../types'
 import { PlanoExecucao } from './PlanoExecucao'
@@ -69,6 +70,21 @@ function VereditoEnvio({ correta }: { correta: boolean | null }): ReactNode {
   )
 }
 
+const HTTP_ERRO_SERVIDOR = 500
+
+/**
+ * Recusa do servidor (prazo, turma encerrada, envio único já usado) traz a regra em
+ * português e é mostrada como veio; falha do servidor e falta de conexão ganham orientação
+ * própria. Antes, nenhuma delas aparecia: o botão simplesmente não fazia nada.
+ */
+function mensagemDeFalha(erro: Error): string {
+  if (erro instanceof HttpError) {
+    const texto = /[.!?]$/.test(erro.message) ? erro.message : `${erro.message}.`
+    return erro.status >= HTTP_ERRO_SERVIDOR ? `${texto} O problema é no servidor: tente de novo em instantes.` : texto
+  }
+  return 'Sem conexão com o servidor. Confira a internet e tente de novo.'
+}
+
 /** Exportado porque o estudo livre mostra o resultado do mesmo jeito (Fase 8). */
 export function ResultadoSandbox({ resultado }: { resultado: SandboxResultado | SandboxEnvioResultado }): ReactNode {
   if (resultado.status !== 'sucesso') {
@@ -99,6 +115,9 @@ export const SandboxPainel = ({ exercicioId, sql, ehProva = false }: SandboxPain
   })
 
   const resultado = enviarMutation.data ?? testarMutation.data
+  const falha = enviarMutation.error ?? testarMutation.error
+  // Em prova, o envio único já foi gasto nesta tela: o botão para de aceitar clique.
+  const envioDeProvaUsado = ehProva && enviarMutation.isSuccess
 
   return (
     <div className="flex max-h-[45vh] shrink-0 flex-col gap-3 overflow-auto rounded-md border border-neutral-300 bg-surface p-3">
@@ -115,6 +134,7 @@ export const SandboxPainel = ({ exercicioId, sql, ehProva = false }: SandboxPain
             variant="ghost"
             isLoading={testarMutation.isPending}
             onClick={() => {
+              enviarMutation.reset()
               testarMutation.mutate()
             }}
           >
@@ -123,18 +143,30 @@ export const SandboxPainel = ({ exercicioId, sql, ehProva = false }: SandboxPain
         )}
         <Button
           isLoading={enviarMutation.isPending}
+          disabled={envioDeProvaUsado}
           onClick={() => {
             if (ehProva) {
               setConfirmandoEnvio(true)
               return
             }
+            testarMutation.reset()
             enviarMutation.mutate()
           }}
         >
           Enviar resposta
         </Button>
       </div>
-      {resultado ? <ResultadoSandbox resultado={resultado} /> : null}
+      {envioDeProvaUsado ? (
+        <p className="text-xs text-neutral-700">
+          Seu envio foi registrado. Se precisar de outro, peça ao professor para liberar um novo envio.
+        </p>
+      ) : null}
+      {falha ? (
+        <p role="alert" className="text-sm text-danger-500">
+          {mensagemDeFalha(falha)}
+        </p>
+      ) : null}
+      {resultado && !falha ? <ResultadoSandbox resultado={resultado} /> : null}
 
       {/* D10: o envio consome a tentativa mesmo se falhar — o aviso precisa ser explícito. */}
       <Modal
