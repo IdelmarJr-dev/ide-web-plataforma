@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authRoutes } from './auth.routes';
 import { diagramaRoutes } from './diagrama.routes';
+import { dissertativaRoutes } from './dissertativa.routes';
 import { dicaIaRoutes } from './dicaIa.routes';
 import { exercicioRoutes } from './exercicio.routes';
 import { healthRoutes } from './health.routes';
@@ -18,6 +19,7 @@ routes.use(turmaRoutes);
 routes.use(provaRoutes);
 routes.use(exercicioRoutes);
 routes.use(diagramaRoutes);
+routes.use(dissertativaRoutes);
 routes.use(sandboxRoutes);
 routes.use(dicaIaRoutes);
 routes.use(painelRoutes);

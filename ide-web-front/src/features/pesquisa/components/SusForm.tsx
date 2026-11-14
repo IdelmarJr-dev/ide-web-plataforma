@@ -30,6 +30,7 @@ export const SusForm = (): ReactNode => {
   })
 
   const completo = SUS_ITENS.every((_, indice) => respostas[indice] !== undefined)
+  const faltam = SUS_ITENS.filter((_, indice) => respostas[indice] === undefined).length
 
   const handleSubmit = useCallback(() => {
     if (!completo) return
@@ -89,7 +90,18 @@ export const SusForm = (): ReactNode => {
         </p>
       ) : null}
 
-      <Button isLoading={enviarMutation.isPending} disabled={!completo} onClick={handleSubmit}>
+      {completo ? null : (
+        <p id="sus-faltam" className="text-xs text-neutral-700">
+          {faltam === 1 ? 'Falta 1 afirmação' : `Faltam ${String(faltam)} afirmações`} para continuar.
+        </p>
+      )}
+
+      <Button
+        isLoading={enviarMutation.isPending}
+        disabled={!completo}
+        onClick={handleSubmit}
+        {...(completo ? {} : { 'aria-describedby': 'sus-faltam' })}
+      >
         Continuar
       </Button>
     </div>

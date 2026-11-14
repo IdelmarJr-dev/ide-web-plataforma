@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import type { ChangeEvent, ReactNode, SyntheticEvent } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useLocation } from 'react-router-dom'
 import { Button } from '~components/Button/Button'
 import { Input } from '~components/Input/Input'
 // Import concreto (não pelo índice `~features/painel`, que reexporta componentes de
@@ -15,8 +16,23 @@ import { matricularSchema } from '../types'
  * ele permanece na turma até o professor encerrá-la — não precisa pedir o código ao
  * professor a cada aula (Fase 8).
  */
+interface MatriculaRecusada {
+  codigo: string
+  motivo: string
+}
+
+function lerMatriculaRecusada(estado: unknown): MatriculaRecusada | null {
+  if (typeof estado !== 'object' || estado === null || !('matriculaRecusada' in estado)) return null
+  const recusa = estado.matriculaRecusada
+  if (typeof recusa !== 'object' || recusa === null) return null
+  const { codigo, motivo } = recusa as Partial<MatriculaRecusada>
+  return typeof codigo === 'string' && typeof motivo === 'string' ? { codigo, motivo } : null
+}
+
 export const EntrarTurmaForm = (): ReactNode => {
-  const [codigo, setCodigo] = useState('')
+  // Vindo do cadastro com um código que o servidor recusou (RegistroForm).
+  const recusaNoCadastro = lerMatriculaRecusada(useLocation().state)
+  const [codigo, setCodigo] = useState(recusaNoCadastro?.codigo ?? '')
   const [erroCodigo, setErroCodigo] = useState<string | undefined>(undefined)
   const queryClient = useQueryClient()
 
@@ -58,6 +74,13 @@ export const EntrarTurmaForm = (): ReactNode => {
         }}
         {...(erroCodigo === undefined ? {} : { errorMessage: erroCodigo })}
       />
+
+      {recusaNoCadastro && matricularMutation.isIdle ? (
+        <p role="alert" className="text-sm text-danger-500">
+          Sua conta foi criada, mas não deu para entrar na turma {recusaNoCadastro.codigo} ({recusaNoCadastro.motivo}).
+          Confira o código com o professor e tente de novo.
+        </p>
+      ) : null}
 
       {matricularMutation.isError ? (
         <p role="alert" className="text-sm text-danger-500">

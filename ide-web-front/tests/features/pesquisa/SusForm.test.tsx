@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { SusForm } from '../../../src/features/pesquisa/components/SusForm'
 import { SUS_ITENS } from '../../../src/features/pesquisa/utils/susScore'
 import { renderWithProviders } from '../../test-utils'
@@ -36,5 +37,23 @@ describe('SusForm', () => {
     expect(screen.getAllByRole('group')).toHaveLength(10)
     expect(screen.getAllByText('Discordo fortemente')).toHaveLength(10)
     expect(screen.getByRole('button', { name: /continuar/i })).toBeDisabled()
+  })
+
+  // O botão desabilitado não explicava por quê.
+  it('diz quantas afirmações faltam enquanto o botão está desabilitado', async () => {
+    mockFetchPesquisa({
+      'GET /pesquisa/minha-participacao': participacao({
+        sessao: { id: 's1', iniciadaEm: '2026-09-14T10:10:00Z', finalizadaEm: '2026-09-14T11:00:00Z' },
+      }),
+    })
+    renderWithProviders(<SusForm />)
+    const user = userEvent.setup()
+
+    expect(await screen.findByText('Faltam 10 afirmações para continuar.')).toBeInTheDocument()
+    const primeiroGrupo = screen.getAllByRole('group')[0]
+    if (!primeiroGrupo) throw new Error('sem itens do SUS')
+    await user.click(within(primeiroGrupo).getAllByRole('radio')[2] as HTMLElement)
+
+    expect(screen.getByText('Faltam 9 afirmações para continuar.')).toBeInTheDocument()
   })
 })

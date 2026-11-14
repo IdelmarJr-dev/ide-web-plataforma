@@ -75,6 +75,13 @@ export interface DiagramaMer {
   atualizadoEm: string
 }
 
+export interface RespostaDissertativa {
+  exercicioId: string
+  texto: string
+  versao: number
+  atualizadoEm: string
+}
+
 export interface ResultadoExercicio {
   id: string
   usuarioId: string
@@ -124,12 +131,19 @@ export type CriarProvaInput = z.infer<typeof criarProvaSchema>
 
 export const NOTA_MAXIMA = 10
 
+// Escala do IFPI: 0,0 a 10,0 (Fase 10, D6). Mensagens em português: antes o professor lia
+// "Invalid input" sem saber qual nota estava fora da escala.
+const MENSAGEM_ESCALA = 'a nota vai de 0,0 a 10,0.'
+const nota = z.coerce
+  .number({ error: 'informe a nota com número, de 0,0 a 10,0.' })
+  .min(0, MENSAGEM_ESCALA)
+  .max(NOTA_MAXIMA, MENSAGEM_ESCALA)
+
 export const revisarResultadoSchema = z.object({
   sqlCorreto: z.boolean().optional(),
-  // Escala do IFPI: 0,0 a 10,0 (Fase 10, D6).
-  merAvaliacao: z.coerce.number().min(0).max(NOTA_MAXIMA).optional(),
-  dissertativaAvaliacao: z.coerce.number().min(0).max(NOTA_MAXIMA).optional(),
-  pontuacao: z.coerce.number().min(0).max(NOTA_MAXIMA).optional(),
+  merAvaliacao: nota.optional(),
+  dissertativaAvaliacao: nota.optional(),
+  pontuacao: nota.optional(),
 })
 export type RevisarResultadoInput = z.infer<typeof revisarResultadoSchema>
 

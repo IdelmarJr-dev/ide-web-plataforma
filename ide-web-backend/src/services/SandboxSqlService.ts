@@ -6,7 +6,10 @@ import type { SandboxProvisioningRepository } from '../repositories/sandbox/Sand
 import type { ResultadoExercicioRepository } from '../repositories/ResultadoExercicioRepository';
 import type { SubmissaoSqlRepository } from '../repositories/SubmissaoSqlRepository';
 import type { AcessoExercicioService } from './AcessoExercicioService';
+import { ValidationError } from '../errors';
+import { logger } from '../utils/logger';
 import { nomeSchemaSandbox, nomeSchemaSandboxLivre } from '../utils/sandboxSchema';
+import { sqlSemInstrucao } from '../utils/sqlVazio';
 
 function normalizarLinha(linha: Record<string, unknown>): string {
   const chavesOrdenadas = Object.keys(linha).sort();
@@ -56,6 +59,10 @@ export class SandboxSqlService {
 
   async enviar(usuarioId: string, exercicioId: string, sql: string): Promise<EnviarSandboxResponseDto> {
     const exercicio = await this.acessoExercicio.exigirEntrega(usuarioId, exercicioId);
+    // Antes de qualquer efeito: envio vazio não pode gastar tentativa nem a liberação do professor.
+    if (sqlSemInstrucao(sql)) {
+      throw new ValidationError('Escreva uma consulta antes de enviar: o editor só tem comentários ou está vazio.');
+    }
     const schemaName = nomeSchemaSandbox(exercicioId, usuarioId);
     await this.provisioningRepository.garantirSchema(schemaName, usuarioId, exercicio.sql_setup);
 
@@ -96,7 +103,13 @@ export class SandboxSqlService {
       correta = resultadoGabarito.status === 'sucesso' && compararLinhas(resultadoAluno.rows, resultadoGabarito.rows);
     }
 
-    const explainJson = await this.executionRepository.explain(schemaName, usuarioId, sql, timeoutMs);
+    // O plano é recurso didático opcional: se o EXPLAIN falhar, o envio já corrigido não pode virar 500.
+    const explainJson = await this.executionRepository
+      .explain(schemaName, usuarioId, sql, timeoutMs)
+      .catch((erro: unknown) => {
+        logger.warn('EXPLAIN falhou; envio segue sem plano', { error: erro instanceof Error ? erro.message : erro });
+        return null;
+      });
 
     const submissao = await this.submissaoRepository.criarComLog({
       exercicio_id: exercicioId,

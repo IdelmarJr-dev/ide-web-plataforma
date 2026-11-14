@@ -49,7 +49,9 @@ const ExerciciosPublicos = (): ReactNode => {
           <Link to={`/exercicios/${exercicio.id}`} className="text-sm font-medium text-primary-600 hover:underline">
             {exercicio.titulo}
           </Link>
-          <span className="ml-2 text-xs text-neutral-600">{exercicio.nivelDificuldade}</span>
+          <span className="ml-2 text-xs text-neutral-600">
+            {exercicio.nivelDificuldade === 'iniciante' ? 'Iniciante' : 'Intermediário'}
+          </span>
         </li>
       ))}
     </ul>

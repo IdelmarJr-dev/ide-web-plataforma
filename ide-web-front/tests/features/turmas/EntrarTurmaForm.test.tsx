@@ -73,4 +73,17 @@ describe('EntrarTurmaForm', () => {
 
     expect(await screen.findByText(/você entrou em banco de dados/i)).toBeInTheDocument()
   })
+
+  // Cadastro com código recusado: a conta é criada, e o painel avisa em vez de calar.
+  it('avisa quando o código informado no cadastro foi recusado e já deixa o código no campo', () => {
+    renderWithProviders(<EntrarTurmaForm />, {
+      route: '/dashboard',
+      state: { matriculaRecusada: { codigo: 'ZZZZZZ', motivo: 'Turma não encontrada' } },
+    })
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Sua conta foi criada, mas não deu para entrar na turma ZZZZZZ (Turma não encontrada).',
+    )
+    expect(screen.getByLabelText(/código da turma/i)).toHaveValue('ZZZZZZ')
+  })
 })

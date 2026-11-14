@@ -7,6 +7,7 @@ import type {
   DiagramaMer,
   ExercicioAluno,
   ExercicioProfessor,
+  RespostaDissertativa,
   RespostasDoAluno,
   ResultadoExercicio,
   RevisarResultadoInput,
@@ -71,6 +72,12 @@ export const exercicioService = {
   finalizar: (exercicioId: string): Promise<null> => httpClient.post<null>(`/exercicios/${exercicioId}/finalizar`),
 
   listarPublicos: (): Promise<ExercicioAluno[]> => httpClient.get<ExercicioAluno[]>('/exercicios/publicos'),
+
+  buscarDissertativa: (exercicioId: string): Promise<RespostaDissertativa | null> =>
+    httpClient.get<RespostaDissertativa | null>(`/exercicios/${exercicioId}/dissertativa`),
+
+  salvarDissertativa: (exercicioId: string, texto: string): Promise<RespostaDissertativa> =>
+    httpClient.put<RespostaDissertativa>(`/exercicios/${exercicioId}/dissertativa`, { texto }),
 
   diagramaDoAluno: (exercicioId: string, usuarioId: string): Promise<DiagramaMer | null> =>
     httpClient.get<DiagramaMer | null>(`/exercicios/${exercicioId}/alunos/${usuarioId}/diagrama`),

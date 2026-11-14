@@ -25,7 +25,6 @@ const SEM_DESTAQUES: never[] = []
 export const ExercicioPage = (): ReactNode => {
   const { id } = useParams<{ id: string }>()
   const [sql, setSql] = useState(DEFAULT_SQL)
-  const [dissertativa, setDissertativa] = useState('')
   const [documento, setDocumento] = useState<DocumentoModelagem>(DOCUMENTO_VAZIO)
   const [selecao, setSelecao] = useState<Selecao | null>(null)
   const capturaRef = useRef<CapturarModelos | null>(null)
@@ -146,7 +145,8 @@ export const ExercicioPage = (): ReactNode => {
           </section>
         ) : null}
         {exercicio.temSql ? (
-          <section aria-label="Consulta SQL" className="flex h-[80vh] min-h-0 flex-col gap-2 lg:h-auto">
+          // `lg:overflow-y-auto`: resultado longo rola dentro da coluna em vez de invadir a dissertativa.
+          <section aria-label="Consulta SQL" className="flex h-[80vh] min-h-0 flex-col gap-2 lg:h-auto lg:overflow-y-auto">
             <div className="min-h-48 flex-1">
               <SQLEditor
                 exercicioId={exercicio.id}
@@ -162,7 +162,7 @@ export const ExercicioPage = (): ReactNode => {
         ) : null}
         {exercicio.temDissertativa ? (
           <section aria-label="Resposta dissertativa" className={`min-h-48 ${duasColunas ? 'lg:col-span-2 lg:h-48' : ''}`}>
-            <DissertativaEditor value={dissertativa} onChange={setDissertativa} />
+            <DissertativaEditor exercicioId={exercicio.id} />
           </section>
         ) : null}
       </main>

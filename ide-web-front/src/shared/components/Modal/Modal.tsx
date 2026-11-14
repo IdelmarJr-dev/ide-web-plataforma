@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import type { ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 
 interface ModalProps {
   title: string
@@ -30,7 +31,10 @@ export const Modal = ({ title, isOpen, onClose, children, size = 'md', fecharCom
 
   if (!isOpen) return null
 
-  return (
+  // Portal no <body>: aberto de dentro de um <details> (ex.: "Novo exercício"), o `fixed`
+  // ficava preso ao conteúdo do details no Chrome atual e a janela não cobria a tela. Fora do
+  // <form> de origem, os botões da janela também não enviam o formulário de fora sem querer.
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <button
         type="button"
@@ -58,7 +62,8 @@ export const Modal = ({ title, isOpen, onClose, children, size = 'md', fecharCom
           ✕
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
 
