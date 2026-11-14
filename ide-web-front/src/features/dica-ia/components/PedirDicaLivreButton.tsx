@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { Button } from '~components/Button/Button'
 import { Modal } from '~components/Modal/Modal'
 import { usePedirDicaLivre } from '../hooks/usePedirDicaLivre'
+import { textoDaDica } from '../utils/textoDaDica'
 
 const HTTP_TOO_MANY_REQUESTS = 429
 const HTTP_SERVICE_UNAVAILABLE = 503
@@ -53,7 +54,7 @@ export const PedirDicaLivreButton = ({ sql }: PedirDicaLivreButtonProps): ReactN
       <Modal title="Dica" isOpen={aberto} onClose={fechar}>
         {respostaIa ? (
           <>
-            <p className="text-sm text-neutral-800">{respostaIa}</p>
+            <p className="whitespace-pre-line text-sm text-neutral-800">{textoDaDica(respostaIa)}</p>
             <div className="mt-4">
               <Button variant="ghost" onClick={fechar}>
                 Fechar

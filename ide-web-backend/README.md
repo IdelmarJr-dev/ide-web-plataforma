@@ -26,7 +26,7 @@ O servidor sobe em `http://localhost:3000` (porta configurável via `.env`); a A
 | `JWT_ACCESS_EXPIRES_IN`      | Validade do access token                                               | `15m`                                 |
 | `JWT_REFRESH_EXPIRES_IN`     | Validade do refresh token                                              | `7d`                                   |
 | `LLM_API_KEY`                | Chave da API de LLM (dicas de IA) — sem ela, a rota responde `LLM_NAO_CONFIGURADO` | vazio                     |
-| `LLM_MODEL`                  | Modelo usado no provedor de LLM (Groq)                                 | `llama-3.1-8b-instant`                   |
+| `LLM_MODEL`                  | Modelo usado no provedor de LLM (Groq)                                 | `openai/gpt-oss-20b`                     |
 | `SANDBOX_DATABASE_URL`       | Connection string da role de provisionamento do sandbox SQL (banco separado) | — (obrigatória)                     |
 | `SANDBOX_EXEC_DATABASE_URL`  | Connection string da role de execução (`SET ROLE` por aluno) do sandbox SQL  | — (obrigatória)                     |
 | `SANDBOX_STATEMENT_TIMEOUT_MS` | Timeout de cada statement do aluno no sandbox                        | `5000`                                    |

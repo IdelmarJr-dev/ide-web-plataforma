@@ -3,6 +3,7 @@ import { Button } from '~components/Button/Button'
 import { Modal } from '~components/Modal/Modal'
 import { usePedirDica } from '../hooks/usePedirDica'
 import type { ContextoDica, EstadoDica } from '../types'
+import { textoDaDica } from '../utils/textoDaDica'
 
 const HTTP_CONFLICT = 409
 const HTTP_SERVICE_UNAVAILABLE = 503
@@ -63,7 +64,7 @@ export const PedirDicaButton = ({ exercicioId, contexto, estado, semConteudo }: 
         </p>
       ) : null}
       <Modal title="Dica" isOpen={dica !== null} onClose={fecharDica}>
-        <p className="text-sm text-neutral-800">{dica?.respostaIa}</p>
+        <p className="whitespace-pre-line text-sm text-neutral-800">{dica ? textoDaDica(dica.respostaIa) : null}</p>
       </Modal>
     </div>
   )
