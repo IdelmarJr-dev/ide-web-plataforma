@@ -15,7 +15,9 @@ export const envSchema = z.object({
   LLM_API_KEY: z.string().optional(),
   // Modelo Groq usado pra montar as dicas de IA (ver docs/decisions/fase3-dicas-ia.md).
   // Groq é o único provedor em escopo, por isso não há LLM_PROVIDER configurável ainda.
-  LLM_MODEL: z.string().min(1).default('llama-3.1-8b-instant'),
+  // O llama-3.1-8b-instant, usado até a Fase 14, foi desligado pelo Groq em 16/08/2026
+  // (free e developer tier); o substituto indicado pelo Groq é o gpt-oss-20b.
+  LLM_MODEL: z.string().min(1).default('openai/gpt-oss-20b'),
   // Banco do sandbox SQL — projeto Supabase separado do banco principal (ver
   // docs/decisions/fase2-sandbox-sql-diagrama-mer.md). Duas connection strings para
   // duas roles Postgres distintas: uma de provisionamento (cria/derruba schema) e uma
