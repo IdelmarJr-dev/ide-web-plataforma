@@ -5,8 +5,10 @@ import { SandboxController } from '../controllers/SandboxController';
 import { requireAuth } from '../middlewares/requireAuth';
 import { requirePapel } from '../middlewares/requirePapel';
 import { GroqLlmClient } from '../repositories/llm/GroqLlmClient';
+import { PrismaAlocacaoGrupoRepository } from '../repositories/AlocacaoGrupoRepository';
 import { PrismaExercicioRepository } from '../repositories/ExercicioRepository';
 import { PrismaMatriculaRepository } from '../repositories/MatriculaRepository';
+import { PrismaPesquisaRepository } from '../repositories/PesquisaRepository';
 import { PrismaRespostaDissertativaRepository } from '../repositories/RespostaDissertativaRepository';
 import { PrismaResultadoExercicioRepository } from '../repositories/ResultadoExercicioRepository';
 import { PgSandboxExecutionRepository } from '../repositories/sandbox/SandboxExecutionRepository';
@@ -15,6 +17,7 @@ import { PrismaSubmissaoSqlRepository } from '../repositories/SubmissaoSqlReposi
 import { PrismaTurmaRepository } from '../repositories/TurmaRepository';
 import { AcessoExercicioService } from '../services/AcessoExercicioService';
 import { DicaLivreService } from '../services/DicaLivreService';
+import { EntregaUnicaDoControle } from '../services/EntregaUnicaDoControle';
 import { PacoteService } from '../services/PacoteService';
 import { SandboxSqlService } from '../services/SandboxSqlService';
 import { asyncHandler } from '../utils/asyncHandler';
@@ -34,6 +37,8 @@ const acessoExercicio = new AcessoExercicioService(
   turmaRepository,
   submissaoRepository,
   resultadoRepository,
+  // Pesquisa do TCC: entrega única do grupo controle (remover junto com a pesquisa).
+  new EntregaUnicaDoControle(new PrismaPesquisaRepository(), new PrismaAlocacaoGrupoRepository()),
 );
 
 const sandboxSqlService = new SandboxSqlService(
