@@ -124,3 +124,51 @@ describe('PesquisaService', () => {
     });
   });
 });
+
+// A tela do controle lia a entrega só do localStorage; agora lê do servidor (16/11/2026).
+describe('PesquisaService.minhaParticipacao — exercícios já entregues', () => {
+  const pesquisa = {
+    id: 'pesquisa-1', turma_id: 'turma-1', exercicio_ids: ['ex-1', 'ex-2'], iniciada_por: 'pesq-1',
+    iniciada_em: new Date('2026-11-16T12:00:00.000Z'), grupos_sorteados_em: new Date('2026-11-16T12:05:00.000Z'), encerrada_em: null,
+  };
+  const findUltimaTentativa = vi.fn<SubmissaoSqlRepository['findUltimaTentativa']>();
+  const buscarAlocacao = vi.fn<AlocacaoGrupoRepository['buscarPorPesquisaEUsuario']>();
+
+  const service = new PesquisaService(
+    {} as unknown as UsuarioRepository,
+    {} as unknown as ExercicioRepository,
+    { findByAlunoId: vi.fn().mockResolvedValue([{ turma_id: 'turma-1' }]) } as unknown as MatriculaRepository,
+    { findUltimaTentativa } as unknown as SubmissaoSqlRepository,
+    {} as unknown as DicaIaRepository,
+    { buscarAtivaPorTurmaIds: vi.fn().mockResolvedValue(pesquisa) } as unknown as PesquisaRepository,
+    { buscarPorPesquisaEUsuario: vi.fn().mockResolvedValue({ aceito: true }) } as unknown as TcleConsentimentoRepository,
+    { buscarPorPesquisaEUsuario: buscarAlocacao } as unknown as AlocacaoGrupoRepository,
+    { buscarPorPesquisaEUsuario: vi.fn().mockResolvedValue(null) } as unknown as SessaoUsoRepository,
+    {} as unknown as RespostaSusRepository,
+    {} as unknown as RespostaRtlxRepository,
+  );
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    findUltimaTentativa.mockImplementation((_usuario, exercicioId) =>
+      Promise.resolve(exercicioId === 'ex-1' ? ({ id: 's1' } as never) : null),
+    );
+  });
+
+  it('lista, para o controle, os exercícios da tarefa com entrega registrada', async () => {
+    buscarAlocacao.mockResolvedValue({ grupo: 'controle' } as never);
+
+    const participacao = await service.minhaParticipacao('aluno-1');
+
+    expect(participacao.exerciciosEntregues).toEqual(['ex-1']);
+  });
+
+  it('não consulta entregas do grupo experimental', async () => {
+    buscarAlocacao.mockResolvedValue({ grupo: 'experimental' } as never);
+
+    const participacao = await service.minhaParticipacao('aluno-1');
+
+    expect(participacao.exerciciosEntregues).toEqual([]);
+    expect(findUltimaTentativa).not.toHaveBeenCalled();
+  });
+});

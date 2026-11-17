@@ -207,6 +207,8 @@ export interface MinhaParticipacaoResponseDto {
   sessao: SessaoResponseDto | null;
   susRespondido: boolean;
   rtlxRespondido: boolean;
+  /** Grupo controle: exercícios da tarefa com entrega registrada (a entrega é única). */
+  exerciciosEntregues: string[];
 }
 
 export interface TcleStatusResponseDto {
