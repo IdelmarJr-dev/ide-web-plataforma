@@ -101,6 +101,26 @@ describe('SessaoForm', () => {
     localStorage.clear()
   })
 
+  // Até 16/11/2026 a entrega ficava só no localStorage: em outro navegador a caixa
+  // voltava vazia e o aluno do controle entregava de novo.
+  it('grupo controle vê a entrega registrada pelo servidor, mesmo em outro navegador', async () => {
+    localStorage.clear()
+    mockFetchPesquisa({
+      [MINHA]: participacao({
+        grupo: 'controle',
+        ambiente: 'ferramentas_tradicionais',
+        sessao: { id: 's1', iniciadaEm: '2026-09-14T10:10:00Z', finalizadaEm: null },
+        exerciciosEntregues: ['ex-1'],
+      }),
+      'GET /turmas/turma-1/exercicios': [EXERCICIO],
+    })
+
+    renderWithProviders(<SessaoForm />)
+
+    expect(await screen.findByText('Resposta registrada.')).toBeInTheDocument()
+    expect(screen.queryByLabelText(/cole sua consulta sql final/i)).not.toBeInTheDocument()
+  })
+
   it('pede confirmação antes de finalizar a tarefa', async () => {
     mockFetchPesquisa({
       [MINHA]: participacao({ sessao: { id: 's1', iniciadaEm: '2026-09-14T10:10:00Z', finalizadaEm: null } }),

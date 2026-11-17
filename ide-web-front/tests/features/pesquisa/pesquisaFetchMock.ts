@@ -26,6 +26,7 @@ export function participacao(overrides: Partial<MinhaParticipacao> = {}): MinhaP
     sessao: null,
     susRespondido: false,
     rtlxRespondido: false,
+    exerciciosEntregues: [],
     ...overrides,
   }
 }
