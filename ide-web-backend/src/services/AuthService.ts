@@ -2,7 +2,8 @@ import type { Usuario } from '../generated/prisma/client';
 import { ConflictError, NotFoundError, UnauthorizedError } from '../errors';
 import type { SessaoAuthRepository } from '../repositories/SessaoAuthRepository';
 import type { UsuarioRepository } from '../repositories/UsuarioRepository';
-import { comparePassword, hashPassword } from '../utils/password';
+import { logger } from '../utils/logger';
+import { comparePassword, hashPassword, precisaRehash } from '../utils/password';
 import { signAccessToken, signRefreshToken, verifyToken } from '../utils/jwt';
 import type { LoginBodyDto, RegistrarBodyDto } from '../dtos/auth.dto';
 
@@ -47,7 +48,28 @@ export class AuthService {
       throw new UnauthorizedError('Credenciais inválidas');
     }
 
+    await this.regravarHashSeAntigo(usuario.id, usuario.senha_hash, input.senha);
     return { usuario, ...(await this.issueTokens(usuario)) };
+  }
+
+  /**
+   * Hash de custo antigo (12) vira custo atual no primeiro login que acerta a senha —
+   * só aí o texto puro está disponível. Falhar aqui não pode barrar quem já se
+   * autenticou: o próximo login tenta de novo.
+   */
+  private async regravarHashSeAntigo(usuarioId: string, hashAtual: string, senha: string): Promise<void> {
+    if (!precisaRehash(hashAtual)) {
+      return;
+    }
+
+    try {
+      await this.usuarioRepository.atualizarSenhaHash(usuarioId, await hashPassword(senha));
+    } catch (error) {
+      logger.warn('Não foi possível regravar o hash de senha com o custo atual', {
+        usuarioId,
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
 
   /**

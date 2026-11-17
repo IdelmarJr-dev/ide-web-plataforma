@@ -12,6 +12,7 @@ export interface UsuarioRepository {
   findByEmail(email: string): Promise<Usuario | null>;
   findById(id: string): Promise<Usuario | null>;
   create(input: CreateUsuarioInput): Promise<Usuario>;
+  atualizarSenhaHash(id: string, senha_hash: string): Promise<void>;
 }
 
 export class PrismaUsuarioRepository implements UsuarioRepository {
@@ -25,5 +26,9 @@ export class PrismaUsuarioRepository implements UsuarioRepository {
 
   create(input: CreateUsuarioInput): Promise<Usuario> {
     return prisma.usuario.create({ data: { ...input, papel: input.papel } });
+  }
+
+  async atualizarSenhaHash(id: string, senha_hash: string): Promise<void> {
+    await prisma.usuario.update({ where: { id }, data: { senha_hash } });
   }
 }
