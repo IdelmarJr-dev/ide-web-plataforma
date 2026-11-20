@@ -295,7 +295,10 @@ export class PesquisaService {
   async minhaParticipacao(usuarioId: string): Promise<MinhaParticipacaoResponseDto> {
     const pesquisa = await this.pesquisaAtivaDoAluno(usuarioId);
     if (!pesquisa) {
-      return { pesquisa: null, tcle: 'pendente', grupo: null, ambiente: null, sessao: null, susRespondido: false, rtlxRespondido: false };
+      return {
+        pesquisa: null, tcle: 'pendente', grupo: null, ambiente: null, sessao: null,
+        susRespondido: false, rtlxRespondido: false, exerciciosEntregues: [],
+      };
     }
 
     const [consentimento, alocacao, sessao] = await Promise.all([
@@ -310,6 +313,8 @@ export class PesquisaService {
           this.respostaRtlxRepository.existePorSessao(sessao.id),
         ])
       : [false, false];
+    const exerciciosEntregues =
+      alocacao?.grupo === 'controle' ? await this.exerciciosEntregues(usuarioId, pesquisa.exercicio_ids) : [];
 
     return {
       pesquisa: toPesquisaResponseDto(pesquisa),
@@ -319,7 +324,15 @@ export class PesquisaService {
       sessao: sessao ? toSessaoResponseDto(sessao) : null,
       susRespondido,
       rtlxRespondido,
+      exerciciosEntregues,
     };
+  }
+
+  private async exerciciosEntregues(usuarioId: string, exercicioIds: string[]): Promise<string[]> {
+    const ultimas = await Promise.all(
+      exercicioIds.map((exercicioId) => this.submissaoSqlRepository.findUltimaTentativa(usuarioId, exercicioId)),
+    );
+    return exercicioIds.filter((_, indice) => ultimas[indice] !== null);
   }
 
   async consentirTcle(usuarioId: string, aceito: boolean): Promise<TcleStatusResponseDto> {

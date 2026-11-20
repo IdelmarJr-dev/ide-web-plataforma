@@ -33,6 +33,9 @@ export interface MinhaParticipacao {
   sessao: SessaoResumo | null
   susRespondido: boolean
   rtlxRespondido: boolean
+  // Grupo controle: exercícios da tarefa já entregues (a entrega é única, e o servidor
+  // recusa a segunda). Opcional só porque um backend anterior a 16/11/2026 não manda.
+  exerciciosEntregues?: string[]
 }
 
 export interface Sessao extends SessaoResumo {

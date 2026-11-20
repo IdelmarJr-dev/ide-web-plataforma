@@ -187,7 +187,11 @@ const TarefaEmAndamento = ({ participacao, pesquisa, sessao }: TarefaEmAndamento
       ) : (
         <ul className="flex flex-col gap-3">
           {exerciciosDaTarefa.map((exercicio) => (
-            <ControleEntrega key={exercicio.id} pesquisaId={pesquisa.id} exercicio={exercicio} />
+            <ControleEntrega
+              key={exercicio.id}
+              exercicio={exercicio}
+              entregue={participacao.exerciciosEntregues?.includes(exercicio.id) ?? false}
+            />
           ))}
         </ul>
       )}

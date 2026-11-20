@@ -1,55 +1,33 @@
 import { useState } from 'react'
 import type { ChangeEvent, ReactNode } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from '~components/Button/Button'
 // Import direto (não pelo barrel `~features/exercicio`), que puxaria a ExercicioPage com o Monaco.
 import { exercicioService } from '~features/exercicio/services/exercicioService'
 import type { ExercicioAluno } from '~features/exercicio/types'
+import { MINHA_PARTICIPACAO_QUERY_KEY } from '../hooks/useMinhaParticipacao'
 
 interface ControleEntregaProps {
-  pesquisaId: string
   exercicio: ExercicioAluno
-}
-
-const PREFIXO_ENTREGUE = 'pesquisa-entrega:'
-
-function chaveEntrega(pesquisaId: string, exercicioId: string): string {
-  return `${PREFIXO_ENTREGUE}${pesquisaId}:${exercicioId}`
-}
-
-function jaEntregue(pesquisaId: string, exercicioId: string): boolean {
-  try {
-    return localStorage.getItem(chaveEntrega(pesquisaId, exercicioId)) === 'true'
-  } catch {
-    return false
-  }
-}
-
-function marcarEntregue(pesquisaId: string, exercicioId: string): void {
-  try {
-    localStorage.setItem(chaveEntrega(pesquisaId, exercicioId), 'true')
-  } catch {
-    // armazenamento indisponível — a entrega já foi registrada no servidor mesmo assim
-  }
+  /** Entrega já registrada no servidor (`minha-participacao`), em qualquer navegador. */
+  entregue: boolean
 }
 
 /**
  * Grupo controle: resolve o exercício nas ferramentas tradicionais (pgAdmin, editor de
  * diagrama) e entrega aqui só a consulta final, que é corrigida no sandbox pra taxa de
  * acerto ser comparável entre os grupos. O aluno não vê se acertou — nas ferramentas
- * tradicionais ele também não teria esse retorno.
+ * tradicionais ele também não teria esse retorno. A entrega é única, e quem garante é
+ * o servidor (`EntregaUnicaDoControle`); até 16/11/2026 ela ficava só no localStorage.
  */
-export const ControleEntrega = ({ pesquisaId, exercicio }: ControleEntregaProps): ReactNode => {
+export const ControleEntrega = ({ exercicio, entregue }: ControleEntregaProps): ReactNode => {
+  const queryClient = useQueryClient()
   const [sql, setSql] = useState('')
-  const [entregue, setEntregue] = useState(() => jaEntregue(pesquisaId, exercicio.id))
   const [copiado, setCopiado] = useState(false)
 
   const entregarMutation = useMutation({
     mutationFn: () => exercicioService.enviarSql(exercicio.id, sql),
-    onSuccess: () => {
-      marcarEntregue(pesquisaId, exercicio.id)
-      setEntregue(true)
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: MINHA_PARTICIPACAO_QUERY_KEY }),
   })
 
   const copiarScript = (): void => {
@@ -82,7 +60,7 @@ export const ControleEntrega = ({ pesquisaId, exercicio }: ControleEntregaProps)
             </div>
           ) : null}
 
-          {entregue ? (
+          {entregue || entregarMutation.isSuccess ? (
             <p role="status" className="text-sm font-medium text-neutral-900">
               Resposta registrada.
             </p>

@@ -6,6 +6,17 @@ import type { ResultadoExercicioRepository } from '../repositories/ResultadoExer
 import type { SubmissaoSqlRepository } from '../repositories/SubmissaoSqlRepository';
 import type { TurmaRepository } from '../repositories/TurmaRepository';
 
+const MOTIVO_PROVA = 'Questão de prova aceita um envio só, e o seu já foi registrado';
+
+/**
+ * Envio único que não vem da prova (hoje, só a entrega do grupo controle da pesquisa —
+ * `EntregaUnicaDoControle`). Devolve a mensagem da recusa, ou null quando a regra não
+ * se aplica a este aluno e exercício.
+ */
+export interface RegraEnvioUnico {
+  motivoEnvioUnico(usuarioId: string, exercicio: Exercicio): Promise<string | null>;
+}
+
 /**
  * Ponto único de acesso do aluno a um exercício. Antes cada serviço comparava
  * `usuario.turma_id === exercicio.turma_id`; com matrícula em várias turmas e
@@ -22,6 +33,7 @@ export class AcessoExercicioService {
     private readonly turmaRepository: TurmaRepository,
     private readonly submissaoRepository: SubmissaoSqlRepository,
     private readonly resultadoRepository: ResultadoExercicioRepository,
+    private readonly regraEnvioUnico?: RegraEnvioUnico,
   ) {}
 
   /** Abrir o exercício: público, ou de uma turma em que o aluno está matriculado. */
@@ -92,13 +104,17 @@ export class AcessoExercicioService {
   }
 
   private async exigirEnvioUnicoDisponivel(usuarioId: string, exercicio: Exercicio): Promise<void> {
-    if (exercicio.prova_id == null) {
+    const motivo =
+      exercicio.prova_id != null
+        ? MOTIVO_PROVA
+        : ((await this.regraEnvioUnico?.motivoEnvioUnico(usuarioId, exercicio)) ?? null);
+    if (motivo === null) {
       return;
     }
 
     const ultima = await this.submissaoRepository.findUltimaTentativa(usuarioId, exercicio.id);
     if (ultima) {
-      throw new ForbiddenError('Questão de prova aceita um envio só, e o seu já foi registrado');
+      throw new ForbiddenError(motivo);
     }
   }
 

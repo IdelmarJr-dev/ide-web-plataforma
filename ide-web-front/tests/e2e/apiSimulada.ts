@@ -172,7 +172,7 @@ export async function simularApi(
 ): Promise<ApiSimulada> {
   const estado: ApiSimulada = { salvamentos: [], pacotes: [], finalizacoes: 0 }
   const semPesquisa = (): Record<string, unknown> => ({
-    pesquisa: null, tcle: 'pendente', grupo: null, ambiente: null, sessao: null, susRespondido: false, rtlxRespondido: false,
+    pesquisa: null, tcle: 'pendente', grupo: null, ambiente: null, sessao: null, susRespondido: false, rtlxRespondido: false, exerciciosEntregues: [],
   })
   const cabecalhos = {
     'access-control-allow-origin': 'http://localhost:5188',
